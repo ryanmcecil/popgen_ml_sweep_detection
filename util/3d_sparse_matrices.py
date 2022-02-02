@@ -1,0 +1,2 @@
+# Potentially use dataclass
+
