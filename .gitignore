@@ -1,2 +1,10 @@
 # intellij configs
 .idea/
+
+# data
+/simulators/data/
+/simulators/tmp/
+
+# tmp files
+/simulators/msms/tmp_settings
+/simulators/slim/tmp_settings
