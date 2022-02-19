@@ -2,9 +2,11 @@
 .idea/
 
 # data
-/simulators/data/
-/simulators/tmp/
+/processors/conversions/
+/simulation/simulations/
+/simulation/tmp/
+/models/saved_models
 
 # tmp files
-/simulators/msms/tmp_settings
-/simulators/slim/tmp_settings
+/simulation/msms/tmp_settings
+/simulation/slim/tmp_settings
