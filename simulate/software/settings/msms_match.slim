@@ -1,0 +1,44 @@
+// set up a simple neutral simulation
+initialize() {{
+	setSeed({SEED}); //SEED is input
+	initializeTreeSeq(simplificationInterval=1000);
+	initializeMutationRate(0.0);
+	//initializeMutationRate(1.5e-8);
+	
+	// m1 mutation type: neutral
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	
+	// g1 genomic element type: uses m1 for all mutations
+	initializeGenomicElementType("g1", m1, 1.0);
+	
+	// uniform chromosome of length 80 kb with uniform recombination
+	initializeGenomicElement(g1, 0, 79999);
+	initializeRecombinationRate(1e-8);
+}}
+
+// create ancestral population of 10,000 individuals and burnin for 100 gen
+1 {{
+	sim.addSubpop("p1", 10000);
+}}
+
+//100000{{
+100{{
+	//decrease population to 2,000
+	p1.setSubpopulationSize(2000);
+}}
+
+//100500{{
+600{{
+	//increase population to 20,000
+	p1.setSubpopulationSize(20000);
+}}
+
+//103500{{
+3600{{
+	//sample at present day
+	//p1Individuals = sample(p1.individuals, NINDIV); //NINDIV=64 for 128 haplotypes
+	//p1Individuals.genomes.outputMS(OUTPUT); //OUTPUT is an input
+	sim.treeSeqOutput({OUTPUT});
+}}
+
+

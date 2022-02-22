@@ -8,7 +8,7 @@ import random
 import sys
 from util.popgen_data_class import PopGenDataClass
 from simulators.simulators import retrieve_simulator
-from processors.popgen_processors import retrieve_processor
+from process.popgen_processors import retrieve_processor
 
 
 class DataGenerator(keras.utils.Sequence, PopGenDataClass):

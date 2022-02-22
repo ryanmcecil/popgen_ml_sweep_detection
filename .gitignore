@@ -2,11 +2,14 @@
 .idea/
 
 # data
-/processors/conversions/
-/simulation/simulations/
-/simulation/tmp/
+/process/conversions/
+/simulate/simulations/
+/simulate/tmp/
 /models/saved_models
 
 # tmp files
-/simulation/msms/tmp_settings
-/simulation/slim/tmp_settings
+/simulate/msms/tmp_settings
+/simulate/slim/tmp_settings
+
+# py files
+modify_path.py

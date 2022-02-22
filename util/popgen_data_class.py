@@ -11,52 +11,33 @@ class PopGenDataClass:
 
     def __init__(self,
                  config: Dict = None,
-                 verbose_level: int=0,
-                 init_data_dir: bool=True,
-                 init_log: bool=True):
+                 root_dir: str = None,
+                 init_base_dir: bool = True,
+                 init_data_dir: bool = True):
         """Initializes popgen dataclass with the specified configuration
 
         Parameters
         ----------
         config: (Dict) - Dictionary containing the configuration for the data class.
-        verbose_level: (int) - Controls level of verbosity for the class
-        init_data_dir: (bool) - If True, initializes the data directorys
+        root_dir: (str) - Location of root directory
+        init_base_dir: (bool) - If True, initializes the base directory to store this data configuration
+        init_data_dir: (bool) - If True, initializes the data directory in base_dir to store the data
         """
-
-        # Setup print statements
-        if init_log:
-            global log
-            if verbose_level > 0:
-                def log(x, level: int = 1):
-                    if level <= verbose_level:
-                        print(x)
-            else:
-                def log(x, level: int = 1):
-                    pass
-            self.log = log
-
         # Set config
         if config is not None:
             self.config = config
 
-            # Set directories for saving
-            self.base_dir = os.path.join(os.getcwd(), self._root_dir_name(), self._data_tree())
-            if not os.path.isdir(self.base_dir):
-                os.makedirs(self.base_dir)
-            if init_data_dir:
-                self.data_dir = self._find_or_make_data_directory()
+            if root_dir is not None:
+                self.root_dir = root_dir
+                if not os.path.isdir(self.root_dir):
+                    os.mkdir(self.root_dir)
 
-                self.example_dir = os.path.join(self.data_dir, 'a_examples')
-                if not os.path.isdir(self.example_dir):
-                    os.mkdir(self.example_dir)
-
-    def _root_dir_name(self) -> str:
-        """To be overriden to specify root directory"""
-        return os.getcwd()
-
-    def _data_tree(self) -> str:
-        """To be overriden to add more complexity to directory structure"""
-        return ''
+                if init_base_dir:
+                    self.base_dir = self._find_or_make_base_directory(self.root_dir)
+                    if init_data_dir:
+                        self.data_dir = os.path.join(self.base_dir, 'data')
+                        if not os.path.isdir(self.data_dir):
+                            os.mkdir(self.data_dir)
 
     def _exclude_save_keys(self) -> List:
         """Defines list of keys to be excluded when saving config. Meant to be overriden.
@@ -85,25 +66,6 @@ class PopGenDataClass:
         """
         return []
 
-    def _check_passed_in_directory(self, directory: Union[str, None]) -> str:
-        """Ensures that passed in directory is not None
-
-        Parameters
-        ----------
-        directory: (str) - Directory to check. If None, attempts to replace it with data_dir
-
-        Returns
-        -------
-        directory: (str) - Original directory or data_dir
-
-        """
-        if directory is None:
-            directory = self.data_dir
-        if directory is None:
-            raise ValueError
-        else:
-            return directory
-
     def _config_is_equal(self,
                          config: Dict) -> bool:
         """Checks that config is equivalent to config of DataClass
@@ -131,14 +93,15 @@ class PopGenDataClass:
 
         Parameters
         ----------
-        directory: (str) - Directory in which config.yaml is stored. If None, looks in data_dir
+        directory: (str) - Directory in which config.yaml is stored. If None, looks in base_dir
 
         Returns
         -------
         settings: (Dict) - Returns a dict of the config contained in the yaml file
 
         """
-        directory = self._check_passed_in_directory(directory)
+        if directory is None:
+            directory = self.base_dir
         with open(os.path.join(directory, 'config.yaml'), 'r') as config_file:
             config = yaml.safe_load(config_file)
         for key in self._exclude_load_keys():
@@ -151,9 +114,10 @@ class PopGenDataClass:
 
         Parameters
         ----------
-        directory: (str) - Directory that simulation config will be written to. If None, writes to data_dir
+        directory: (str) - Directory that simulate config will be written to. If None, writes to base_dir
         """
-        directory = self._check_passed_in_directory(directory)
+        if directory is None:
+            directory = self.base_dir
         with open(os.path.join(directory, 'config.yaml'), 'w') as config_file:
             tmp = {}
             for key in self._exclude_save_keys():
@@ -162,17 +126,17 @@ class PopGenDataClass:
             for key in tmp:
                 self.config[key] = tmp[key]
 
-    def _data_dir_surname(self) -> str:
-        """Defines surname of data directory"""
-        return 'data'
+    def _base_dir_surname(self) -> str:
+        """Defines surname of base directory"""
+        return 'base'
 
-    def _find_or_make_data_directory(self,
+    def _find_or_make_base_directory(self,
                                      directory: str = None) -> str:
-        """Attempts to find data directory in directory. Creates it if not found
+        """Attempts to find base directory in directory. Creates it if not found
 
         Parameters
         ----------
-        directory: (str) - Directory that will be searched, defaults to base_dir
+        directory: (str) - Directory that will be searched, defaults to root_dir
 
         Returns
         -------
@@ -180,16 +144,16 @@ class PopGenDataClass:
 
         """
         if directory is None:
-            directory = self.base_dir
-        for data_dir in os.listdir(directory):
-            if data_dir != 'config.yaml':
-                config = self._read_config_from_yaml_file(os.path.join(directory, data_dir))
+            directory = self.root_dir
+        for base_dir in os.listdir(directory):
+            if base_dir != 'config.yaml':
+                config = self._read_config_from_yaml_file(os.path.join(directory, base_dir))
                 if self._config_is_equal(config):
-                    return os.path.join(directory, data_dir)
-        data_dir = f'{directory}/{self._data_dir_surname()}_{len(os.listdir(directory)):04d}'
-        os.mkdir(data_dir)
-        self._write_config_to_yaml_file(data_dir)
-        return data_dir
+                    return os.path.join(directory, base_dir)
+        base_dir = f'{directory}/{self._base_dir_surname()}_{len(os.listdir(directory)):04d}'
+        os.mkdir(base_dir)
+        self._write_config_to_yaml_file(base_dir)
+        return base_dir
 
     def _retrieve_file_from_id_and_datatype(self,
                                             id_num: int,
@@ -311,7 +275,8 @@ class PopGenDataClass:
         directory: (str) - Saves data to specified directory. If None, saves to data_dir
         """
         file = self._retrieve_file_from_id_and_datatype(id_num, datatype)
-        directory = self._check_passed_in_directory(directory)
+        if directory is None:
+            directory = self.data_dir
         full_file_path = os.path.join(directory, file)
         if datatype == 'popgen_image':
             sparse_matrix = sparse.csr_matrix(data)
@@ -323,7 +288,7 @@ class PopGenDataClass:
 
     def _last_saved_id(self,
                        datatype: str,
-                       directory: str=None) -> int:
+                       directory: str = None) -> int:
         """Looks in directory or data_dir and finds ID of last saved file of type datatype
 
         Parameters
@@ -335,7 +300,8 @@ class PopGenDataClass:
         -------
         int: ID of last saved file
         """
-        directory = self._check_passed_in_directory(directory)
+        if directory is None:
+            directory = self.data_dir
         id_num = 1
         while True:
             if not os.path.isfile(os.path.join(directory, self._retrieve_file_from_id_and_datatype(id_num, datatype))):
@@ -345,7 +311,7 @@ class PopGenDataClass:
     def get_filenames(self,
                       datatype: str,
                       n: int,
-                      directory: str=None) -> List[str]:
+                      directory: str = None) -> List[str]:
         """
 
         Parameters
@@ -359,7 +325,8 @@ class PopGenDataClass:
         List[str] - list of n filenames with type datatype from directory or data_dir
 
         """
-        directory = self._check_passed_in_directory(directory)
+        if directory is None:
+            directory = self.data_dir
         filenames = []
         for i in range(n):
             filenames.append(os.path.join(directory, self._retrieve_file_from_id_and_datatype(i+1, datatype)))
@@ -369,7 +336,7 @@ class PopGenDataClass:
                            data: np.ndarray,
                            directory: str = None,
                            name: str = 'example'):
-        """Plots example image in directory as png file
+        """Plots example image in bae directory as png file
 
         Parameters
         ----------
@@ -378,12 +345,7 @@ class PopGenDataClass:
         name: (str) - name of file to be saved
         """
         if directory is None:
-            directory = self.example_dir
+            directory = self.base_dir
         im = Image.fromarray(np.uint8(255 * data))
         name = name + '.png'
         im.save(os.path.join(directory, name))
-
-
-
-
-
