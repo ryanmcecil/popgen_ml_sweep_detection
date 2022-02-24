@@ -77,6 +77,8 @@ if __name__ == '__main__':
                          }
 
     model_settings = {
+        'type': 'ml',
+        'name': 'imagene',
         'max_pooling': True,
         'filters': 1,
         'depth': 1,
@@ -85,15 +87,15 @@ if __name__ == '__main__':
     }
 
     settings = {
-        'simulations': sim_settings,
-        'conversions': conversion_settings,
-        'training': training_settings,
+        'train': {'simulations': sim_settings,
+                  'conversions': conversion_settings,
+                   'training': training_settings},
         'model': model_settings
     }
 
     getGPU()
 
-    imagene = retrive_ml_model('imagene')(settings)
+    imagene = retrive_ml_model(settings['model']['type'])(settings)
     imagene.train()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

@@ -182,11 +182,11 @@ if __name__ == '__main__':
                     processor.run_conversions()
 
 
-    sim_settings = {
+    sim_settings1 = {
         'neutral': [
             {'software': 'msms',
              'NREF': '10000',
-             'N': 100,
+             'N': 100000,
              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
              'LEN': '80000',
              'THETA': '48',
@@ -201,7 +201,7 @@ if __name__ == '__main__':
         ],
         'sweep': [
             {'software': 'msms',
-             'N': 100,
+             'N': 100000,
              'NREF': '10000',
              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
              'LEN': '80000',
@@ -211,6 +211,25 @@ if __name__ == '__main__':
              'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
              'FREQ': '`bc <<< \'scale=6; 1/100\'`',
              'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+             'SELCOEFF': '0.01',
+             }
+        ]
+    }
+
+    sim_settings2 = {
+        'neutral': [
+            {'software': 'slim',
+             'template': 'msms_match.slim',
+             'N': 100000,
+             'NINDIV': '64'
+             }
+
+        ],
+        'sweep': [
+            {'software': 'slim',
+             'template': 'msms_match_selection.slim',
+             'N': 100000,
+             'NINDIV': '64',
              'SELCOEFF': '0.01',
              }
         ]
@@ -239,8 +258,15 @@ if __name__ == '__main__':
                            ]
 
     settings = {
-        'simulations': sim_settings,
+        'simulations': sim_settings1,
         'conversions': conversion_settings
     }
 
-    simulate_and_process(settings, parallel=True, max_sub_processes=4)
+    #simulate_and_process(settings, parallel=False, max_sub_processes=22)
+
+    settings = {
+        'simulations': sim_settings2,
+        'conversions': conversion_settings
+    }
+
+    simulate_and_process(settings, parallel=False, max_sub_processes=16)

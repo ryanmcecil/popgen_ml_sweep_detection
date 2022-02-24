@@ -1,19 +1,50 @@
-from models.mlmodel import MLModel
 from tensorflow.keras.layers import Dropout, Conv1D, Conv2D,MaxPooling2D, MaxPooling1D, Dense, GlobalMaxPooling2D, \
     GlobalMaxPooling1D, AveragePooling2D, AveragePooling1D, GlobalAveragePooling2D, GlobalAveragePooling1D, Flatten, \
     concatenate, Conv3D, Reshape, Lambda, ReLU, Add
 from tensorflow.keras import Input, Model, regularizers
 from tensorflow.keras import initializers
+import tensorflow as tf
+from models.model import SweepDetectionModel
 
-def retrive_ml_model(name: str):
+
+def retrieve_ml_model(name: str):
     if name == 'imagene':
         return ImaGene
     else:
         raise NotImplementedError
 
-class ImaGene(MLModel):
+
+class MLModel(SweepDetectionModel):
+    '''Abstract class for supervised machine learning models built to detect selective sweeps'''
 
     def _model(self):
+        if self.config['name'] == 'imagene':
+            return
+
+
+class MLSweepModel(tf.keras.Model):
+
+    def classify(self, data) -> int:
+        """Classifies input data"""
+        prediction = self.predict(data)
+        if prediction > 0.5:
+            return 1
+        else:
+            return 0
+
+
+class ImaGene(MLModel):
+    """Implements Imagene Convolutional Neural Network as detailed in
+    https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2927-x#ref-CR30"""
+
+    def _model(self) -> tf.keras.Model:
+        """
+
+        Returns
+        -------
+        tf.keras.Model: The Imagene CNN with specified settings dictated by self.config
+
+        """
         input = Input(shape=(128, 128, 1), name='input')
 
         x = input
@@ -32,5 +63,5 @@ class ImaGene(MLModel):
             x = Dense(units=64, activation='relu')(x)
 
         x = Dense(units=1, activation='sigmoid')(x)
-        model = Model(inputs=input, outputs=x)
+        model = MLSweepModel(inputs=input, outputs=x)
         return model

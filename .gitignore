@@ -7,6 +7,10 @@
 /simulate/tmp/
 /models/saved_models
 
+/push_to_server.sh
+/no_data_push_to_server.sh
+/update_from_server.sh
+
 # tmp files
 /simulate/msms/tmp_settings
 /simulate/slim/tmp_settings

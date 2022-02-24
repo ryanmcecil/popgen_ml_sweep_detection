@@ -6,8 +6,14 @@ import random
 import numpy as np
 import multiprocessing
 import re
-import importlib.resources as ilresources
 from simulate.software import settings
+try:
+    import importlib.resources as ilresources
+except ImportError:
+    try:
+        import importlib_resources as ilresources
+    except ImportError:
+        raise ImportError('Must install backport of importlib_resources if not using Python >= 3.7')
 # Seed generated using os.urandom
 # Defines seeds for all simulations dependant on number of sim directory
 random.seed(434935399793924222151)
@@ -128,7 +134,7 @@ class PopGenSimulator(PopGenDataClass, ABC):
         id_num: (int) - ID of current simulate
 
         """
-        print(f'Running simulate {id_num}')
+        print(f'Running simulation {id_num}')
         image, positions = self._load_sim_data(self._simulate(id_num))
         if id_num == 1:
             self.plot_example_image(image)
@@ -150,5 +156,6 @@ class PopGenSimulator(PopGenDataClass, ABC):
             else:
                 for i in range(last_saved_id+1, self.config['N']+1):
                     self._simulate_and_save(i)
+            self._erase_simulated_images()
         else:
             print('Simulations have already been simulated')

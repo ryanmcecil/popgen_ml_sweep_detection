@@ -1,31 +1,64 @@
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, List
 import os
 from util.popgen_data_class import PopGenDataClass
 
 
-
 class SweepDetectionModel(ABC, PopGenDataClass):
+    """Abstract Class for models built to detect selective sweeps along portion of genome"""
+
     def __init__(self,
-                 config: Dict):
-        super().__init__(config=config)
+                 config: Dict,
+                 root_dir: str = os.path.join(os.getcwd(), 'models', 'saved_models'),
+                 train_model: bool = True):
+        """
+        Parameters
+        ----------
+        config: (Dict) - Dictionary containing training settings, model settings, training
+        settings, and potentially test settings
+        root_dir: (str) - Location of root directory
+        train: (bool) - If True, model will be trained.
+        """
+        super().__init__(config=config, root_dir=root_dir)
         self.config = config
-        self.model = self._model()
-        self.train()
+        self.train_model = train_model
+        self.model = self._load_model()
+
+    def _exclude_save_keys(self) -> List:
+        return ['test']
 
     @abstractmethod
     def _model(self):
-        """Returns model"""
+        """Returns model. Must implement standard functions such as predict on tensor object."""
         raise NotImplementedError
 
-    def train(self):
-        raise NotImplementedError
+    def _load_model(self):
+        """Loads trained model, otherwise initializes the model and then trains it"""
+        model = self._model()
+        if os.path.exists(os.path.join(self.data_dir, 'model')):
+            model.load(os.path.join(self.data_dir, 'model'))
+        else:
+            if self.train_model:
+                model = self.train(model)
+        return model
 
-    def _root_dir_name(self) -> str:
-        return os.path.join(f'{os.getcwd()}', 'models', 'saved_models')
+    def train(self, model):
+        """Trains the inputted model, saves it, and then returns it
 
-    def load_model(self):
-        raise NotImplementedError
+        Parameters
+        ----------
+        model: Either an ML model or a statistic model
 
-    def save_model(self):
-        raise NotImplementedError
+        """
+        loss_file = os.path.join(self.data_dir, 'loss_log.csv')
+        csv_logger = CSVLogger(loss_file, append=True, separator=',')
+
+        model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
+        data_generator = DataGenerator(self.config['train'], load_training_data=True)
+        model.fit(data_generator,epochs=self.config['train']['training']['epochs'], verbose=1,
+                        validation_data = data_generator.get_validation_data(),callbacks=[csv_logger])
+        model.save(os.path.join(self.data_dir), 'model')
+        return model
+
+    def _base_dir_surname(self) -> str:
+        return 'model'

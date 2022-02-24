@@ -1,6 +1,6 @@
 import numpy as np
 from tensorflow import keras
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 import random
 from util.popgen_data_class import PopGenDataClass
 from simulate.popgen_simulators import retrieve_simulator
@@ -42,36 +42,66 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
         else:
             return 0
 
-    def get_validation_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def generator(self,
+                  dataset: str = 'test'):
+        """Generates the specified dataset
+
+        Parameters
+        ----------
+        dataset: (str) - Name of dataset, either 'train', 'validate', or 'test'
+        """
+        if dataset == 'train':
+            dataset = self.train
+        elif dataset == 'validate':
+            dataset = self.validate
+        elif dataset == 'test':
+            dataset = self.test
+        else:
+            raise Exception(f'Dataset {dataset} does not exist.')
+        if dataset is None:
+            raise Exception(f'Dataset {dataset} was not loaded.')
+        for label, files in dataset:
+            x = []
+            for file in files:
+                x.append(self.load_data(full_file_path=file, as_tensor=True))
+            yield x, np.asarray([self._convert_label(label)])
+
+    def _get_data_pairs(self,
+                            data: List[str, Tuple[str]]) -> Tuple[List[np.ndarray], np.ndarray]:
+        """Retrieves batch of (x,y) pairs from data
+
+        Parameters
+        ----------
+        data: (List[str, Tuple[str]]) - Data contain labels and filenames
+
+        Returns
+        -------
+        Tuple[np.ndarray, np.ndarray]: Batch of (x,y)
+        """
+        x = [[] for file in data[0][1]]
+        y = []
+
+        for label, files in data:
+            for i, file in enumerate(files):
+                x[i].append(self.load_data(full_file_path=file, as_tensor=True))
+            y.append(self._convert_label(label))
+
+        x = [np.concatenate(x_list) for x_list in x]
+        return x, np.asarray(y)
+
+    def get_validation_data(self) -> Tuple[List[np.ndarray], np.ndarray]:
         """Returns validation data and labels for validation testing during training
 
         Returns
         -------
         Tuple[np.ndarray, np.ndarray]: (validation data, labels)
         """
-        x = [[] for file in self.validate[0][1]]
-        y = []
-        for label, files in self.validate:
-            for i, file in enumerate(files):
-                x[i].append(self.load_data(full_file_path=file))
-            y.append(self._convert_label(label))
+        return self._get_data_pairs(self.validate)
 
-        for i in range(len(x)):
-            x[i] = np.asarray(x[i])
-            x[i] = x[i][:, :, :, np.newaxis]
-
-        return np.asarray(x), np.asarray(y)
-
-    def generate_test_set(self):
-        """Generator for test set
-        """
-        for label, files in self.test:
-            x = []
-            for i, file in enumerate(files):
-                x.append(self.load_data(full_file_path=file))
-            for i in range(len(x)):
-                x[i] = x[i][np.newaxis, :, :, np.newaxis]
-            yield x, np.asarray([self._convert_label(label)])
+    def __getitem__(self, index):
+        '''Generate one batch of data'''
+        data = self.train[index*self.config['training']['batch_size']:(index+1)*self.config['training']['batch_size']]
+        return self._get_data_pairs(data)
 
     def _prepare_data(self):
         """Prepares training and/or testing data

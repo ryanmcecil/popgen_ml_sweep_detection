@@ -113,7 +113,7 @@ class SLiM(PopGenSimulator):
         for i in range(2):
             for j in range(output.shape[1]):
                 data[i*output.shape[1] + j, :] = output[:, j, i]
-
+        os.remove(file)
         return data, out['variants/POS']
 
 
@@ -179,7 +179,7 @@ class MSMS(PopGenSimulator):
             for i, line in enumerate(lines[6:]):
                 if line != '\n':
                     image[i, :] = [int(d) if d == '0' or d == '1' else 1 for d in line.replace('\n', '')]
-            os.remove(file)
+        os.remove(file)
         return image, positions
 
 

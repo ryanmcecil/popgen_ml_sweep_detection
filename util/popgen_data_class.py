@@ -203,12 +203,14 @@ class PopGenDataClass:
             raise NotImplementedError
 
     def _load_data(self,
-                   file_path: str) -> np.ndarray:
+                   file_path: str,
+                   as_tensor: bool = False) -> np.ndarray:
         """Loads data from file_path
 
         Parameters
         ----------
         file_path: (str) - Path to file to be loaded
+        as_tensor: (bool) - If True, loads data in tensor shape
 
         Returns
         -------
@@ -218,9 +220,16 @@ class PopGenDataClass:
         datatype = self._data_type_from_filename(file_path)
         if datatype == 'popgen_image':
             image = sparse.load_npz(file_path)
-            return image.toarray()
+            if as_tensor:
+                return image.toarray()[np.newaxis, :, :, np.newaxis]
+            else:
+                return image.toarray()
         elif datatype == 'popgen_positions':
-            return np.load(file_path)
+            positions = np.load(file_path)
+            if as_tensor:
+                return positions[np.newaxis, :]
+            else:
+                return positions
         else:
             raise NotImplementedError
 
@@ -229,7 +238,8 @@ class PopGenDataClass:
                   file: str = None,
                   id_num: int = None,
                   datatype: str = None,
-                  directory: str = None) -> np.ndarray:
+                  directory: str = None,
+                  as_tensor: bool = False) -> np.ndarray:
         """
 
         Parameters
@@ -242,6 +252,7 @@ class PopGenDataClass:
         datatype: (str) - If full_file_path and file are None, datatype of file to be loaded from directory or data_dir
             if directory is not specified
         directory: (str) - If full_file_path is None, directory to load file from. Loads from data_dir if None.
+        as_tensor: (bool) - If True, loads data in tensor shape
 
         Returns
         -------
@@ -258,7 +269,7 @@ class PopGenDataClass:
                 full_file_path = os.path.join(directory, file)
             else:
                 full_file_path = os.path.join(self.data_dir, file)
-        return self._load_data(full_file_path)
+        return self._load_data(full_file_path, as_tensor=as_tensor)
 
     def save_data(self,
                   data: np.ndarray,
