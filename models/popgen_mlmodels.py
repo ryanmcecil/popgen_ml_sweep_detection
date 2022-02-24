@@ -4,7 +4,7 @@ from tensorflow.keras.layers import Dropout, Conv1D, Conv2D,MaxPooling2D, MaxPoo
 from tensorflow.keras import Input, Model, regularizers
 from tensorflow.keras import initializers
 import tensorflow as tf
-from models.model import SweepDetectionModel
+from models.popgen_model import PopGenModel
 
 
 def retrieve_ml_model(name: str):
@@ -14,7 +14,7 @@ def retrieve_ml_model(name: str):
         raise NotImplementedError
 
 
-class MLModel(SweepDetectionModel):
+class MLPopGenModel(PopGenModel):
     '''Abstract class for supervised machine learning models built to detect selective sweeps'''
 
     def _model(self):
@@ -33,7 +33,7 @@ class MLSweepModel(tf.keras.Model):
             return 0
 
 
-class ImaGene(MLModel):
+class ImaGene(MLPopGenModel):
     """Implements Imagene Convolutional Neural Network as detailed in
     https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2927-x#ref-CR30"""
 

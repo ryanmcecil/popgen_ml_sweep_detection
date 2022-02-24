@@ -1,11 +1,11 @@
-from models.model import SweepDetectionModel
+from models.popgen_model import PopGenModel
 import allel
 import numpy as np
 from typing import List
 from generator.data_generator import DataGenerator
 
 
-class SummaryStatModel(SweepDetectionModel):
+class SummaryStatPopGenModel(PopGenModel):
     def _model(self):
         """Initializes the model"""
         return Statistic(self.config['name'])

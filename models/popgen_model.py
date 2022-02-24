@@ -2,9 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Dict, List
 import os
 from util.popgen_data_class import PopGenDataClass
+from generator.data_generator import DataGenerator
+from tensorflow.keras.callbacks import CSVLogger
+from tensorflow.keras.optimizers import Adam
 
 
-class SweepDetectionModel(ABC, PopGenDataClass):
+class PopGenModel(ABC, PopGenDataClass):
     """Abstract Class for models built to detect selective sweeps along portion of genome"""
 
     def __init__(self,

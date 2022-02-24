@@ -27,7 +27,7 @@ def getGPU():
             print(e)
 
 
-from models.mlmodels import retrive_ml_model
+from models.popgen_mlmodels import retrive_ml_model
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     sim_settings = {
