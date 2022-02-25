@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Iterable
 import os
 from util.popgen_data_class import PopGenDataClass
 from generator.data_generator import DataGenerator
 from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
 
 
 class PopGenModel(ABC, PopGenDataClass):
@@ -57,7 +60,7 @@ class PopGenModel(ABC, PopGenDataClass):
         csv_logger = CSVLogger(loss_file, append=True, separator=',')
 
         model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
-        data_generator = DataGenerator(self.config['train'], load_training_data=True)
+        data_generator = DataGenerator(self.config, load_training_data=True)
         model.fit(data_generator,epochs=self.config['train']['training']['epochs'], verbose=1,
                         validation_data = data_generator.get_validation_data(),callbacks=[csv_logger])
         model.save(os.path.join(self.data_dir), 'model')
@@ -65,3 +68,24 @@ class PopGenModel(ABC, PopGenDataClass):
 
     def _base_dir_surname(self) -> str:
         return 'model'
+
+    def _test_predictions_and_labels(self) -> Iterable:
+        """"""
+        data_generator = DataGenerator(self.config, load_training_data=False)
+        classifications = []
+        labels = []
+        for x,y in data_generator.generator('test'):
+            classifications.append(self.model.classify(x))
+            labels.append(y)
+        return classifications, labels
+
+
+    def test_and_plot_cnf(self) -> ConfusionMatrixDisplay:
+        y_pred, y_true = self._test_predictions_and_labels()
+        cmd = ConfusionMatrixDisplay.from_predictions(y_true,
+                                                      y_pred,
+                                                      labels=['neutral', 'sweep'],
+                                                      normalize='true')
+        return cmd
+
+
