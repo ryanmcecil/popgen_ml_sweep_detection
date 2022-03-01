@@ -62,7 +62,7 @@ class SLiM(PopGenSimulator):
         orig_ts = tskit.load(input_file)  # name of trees file from slim
 
         # recapitate
-        rts = pyslim.recapitate(orig_ts, recombination_rate=1e-8, ancestral_Ne=10000)
+        rts = pyslim.recapitate(orig_ts, ancestral_Ne=10000, recombination_rate=1e-8)
 
         # simplify
         alive_inds = rts.individuals_alive_at(0)

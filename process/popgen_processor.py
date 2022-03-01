@@ -79,16 +79,9 @@ class PopGenProcessor(PopGenDataClass, ABC):
         last_saved_id = self._last_saved_id(self.conversion_datatype())
 
         if last_saved_id < self.simulator.config['N']:
-            if last_saved_id < self.simulator.config['N']:
-                print('Running Conversions')
-                if self.parallel:
-                    pool = multiprocessing.Pool(self.max_sub_processes)
-                    pool.map(self._convert_and_save, range(last_saved_id + 1, self.simulator.config['N'] + 1))
-                else:
-                    for i in range(last_saved_id + 1, self.simulator.config['N'] + 1):
-                        self._convert_and_save(i)
+            if self.parallel:
+                pool = multiprocessing.Pool(self.max_sub_processes)
+                pool.map(self._convert_and_save, range(last_saved_id + 1, self.simulator.config['N'] + 1))
             else:
-                print('Simulations have already been processed')
-
-
-
+                for i in range(last_saved_id + 1, self.simulator.config['N'] + 1):
+                    self._convert_and_save(i)

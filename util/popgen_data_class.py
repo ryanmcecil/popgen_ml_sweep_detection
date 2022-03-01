@@ -1,4 +1,4 @@
-from typing import Dict, Union, List
+from typing import Dict, List
 import os
 import yaml
 import numpy as np
@@ -121,7 +121,8 @@ class PopGenDataClass:
         with open(os.path.join(directory, 'config.yaml'), 'w') as config_file:
             tmp = {}
             for key in self._exclude_save_keys():
-                tmp[key] = self.config.pop(key)
+                if key in self.config:
+                    tmp[key] = self.config.pop(key)
             yaml.dump(self.config, config_file)
             for key in tmp:
                 self.config[key] = tmp[key]
@@ -296,6 +297,42 @@ class PopGenDataClass:
             np.save(full_file_path, data)
         else:
             raise NotImplementedError
+
+    def data_exists(self,
+                  full_file_path: str = None,
+                  file: str = None,
+                  id_num: int = None,
+                  datatype: str = None,
+                  directory: str = None) -> bool:
+        """Checks if data exists
+
+        Parameters
+        ----------
+        full_file_path: (str) - Complete path to file
+        file: (str) - If full_file_path is None, name of file to be checked from directory or data_dir
+            if directory is not specified
+        id_num: (str) - If full_file_path and file are None, id of file to be checked from directory or data_dir
+            if directory is not specified
+        datatype: (str) - If full_file_path and file are None, datatype of file to be checked from directory or data_dir
+            if directory is not specified
+        directory: (str) - If full_file_path is None, directory to load file from. Loads from data_dir if None.
+
+        Returns
+        -------
+        bool: True if data exists, false otherwise
+
+        """
+        if full_file_path is None:
+            if file is None:
+                if id is not None and datatype is not None:
+                    file = self._retrieve_file_from_id_and_datatype(id_num, datatype)
+                else:
+                    raise Exception
+            if directory is not None:
+                full_file_path = os.path.join(directory, file)
+            else:
+                full_file_path = os.path.join(self.data_dir, file)
+        return os.path.isfile(full_file_path)
 
     def _last_saved_id(self,
                        datatype: str,

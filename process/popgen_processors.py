@@ -2,6 +2,8 @@ from typing import Dict
 import skimage.transform
 import numpy as np
 from process.popgen_processor import PopGenProcessor
+from simulate.popgen_simulator import PopGenSimulator
+from typing import List
 
 
 def retrieve_processor(name: str):
@@ -14,6 +16,8 @@ def retrieve_processor(name: str):
     """
     if name == 'imagene':
         return ImaGeneProcessor
+    elif name == 'raw_data':
+        return RawPopGenData
     else:
         raise NotImplementedError
 
@@ -21,7 +25,8 @@ def retrieve_processor(name: str):
 class ImaGeneProcessor(PopGenProcessor):
 
     def _check_base_settings(self):
-        if 'sorting' not in self.config or 'min_minor_allele_freq' not in self.config or 'resize_dimensions' not in self.config:
+        if 'sorting' not in self.config or 'min_minor_allele_freq' not in self.config or \
+                'resize_dimensions' not in self.config:
             raise ValueError
 
     def conversion_datatype(self) -> str:
@@ -82,7 +87,8 @@ class ImaGeneProcessor(PopGenProcessor):
             raise NotImplementedError
         return data
 
-    def _majorminor(self, data: np.ndarray):
+    @staticmethod
+    def _majorminor(data: np.ndarray):
         """Modifed from Imagene. Converts to major minor polarization
 
         Parameters
@@ -95,7 +101,7 @@ class ImaGeneProcessor(PopGenProcessor):
 
         """
         idx = np.where(np.mean(data, axis=0) > 0.5)[0]
-        data[:,idx] = np.abs(1 - data[:,idx])
+        data[:, idx] = np.abs(1 - data[:, idx])
         return data
 
     def _filter_freq(self, data: np.ndarray):
@@ -111,10 +117,10 @@ class ImaGeneProcessor(PopGenProcessor):
 
         """
         idx = np.where(np.mean(data, axis=0) >= self.config['min_minor_allele_freq'])[0]
-        data = data[:,idx]
+        data = data[:, idx]
         return data
 
-    def _resize(self, data:np.ndarray):
+    def _resize(self, data: np.ndarray):
         """Resize all images to same dimensions. Modified from Imagene.
 
         Parameters
@@ -136,10 +142,10 @@ class ImaGeneProcessor(PopGenProcessor):
         data = self._majorminor(data)
         data = self._filter_freq(data)
 
-        if self.config['sorting'] == 'Rows' or self.config['sorting']== 'RowsCols':
+        if self.config['sorting'] == 'Rows' or self.config['sorting'] == 'RowsCols':
             data = self._sort(data, 'rows_freq')
 
-        if self.config['sorting']== 'Cols' or self.config['sorting']== 'RowsCols':
+        if self.config['sorting']== 'Cols' or self.config['sorting'] == 'RowsCols':
             data = self._sort(data, 'cols_freq')
 
         if self.config['sorting'] != 'None' and self.config['sorting'] != 'Cols' \
@@ -149,6 +155,42 @@ class ImaGeneProcessor(PopGenProcessor):
         data = self._resize(data)
 
         return data
+
+
+class RawPopGenData(PopGenProcessor):
+    """A do nothing processor class that simply returns the simulation filenames"""
+
+    def __init__(self,
+                 config: Dict,
+                 simulator: PopGenSimulator,
+                 **kwargs):
+        """Initializes processor class with configuration
+
+        Parameters
+        ----------
+        simulator: (Simulator) - Simulator that simulated the genetic data
+        """
+        self.config = config
+        self.simulator = simulator
+
+    def _check_base_settings(self):
+        if 'datatype' not in self.config:
+            raise Exception('Datatype must be in RawPopGenData class config')
+
+    def conversion_datatype(self) -> str:
+        return self.config['datatype']
+
+    def _convert(self, data: np.ndarray) -> np.ndarray:
+        pass
+
+    def run_conversions(self):
+        pass
+
+    def get_filenames(self,
+                      datatype: str,
+                      n: int,
+                      directory: str = None) -> List[str]:
+        return self.simulator.get_filenames(datatype=datatype, n=n)
 
 
 if __name__ == '__main__':
@@ -186,7 +228,7 @@ if __name__ == '__main__':
         'neutral': [
             {'software': 'msms',
              'NREF': '10000',
-             'N': 100000,
+             'N': 50000,
              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
              'LEN': '80000',
              'THETA': '48',
@@ -201,7 +243,7 @@ if __name__ == '__main__':
         ],
         'sweep': [
             {'software': 'msms',
-             'N': 100000,
+             'N': 50000,
              'NREF': '10000',
              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
              'LEN': '80000',
@@ -220,7 +262,7 @@ if __name__ == '__main__':
         'neutral': [
             {'software': 'slim',
              'template': 'msms_match.slim',
-             'N': 100000,
+             'N': 50000,
              'NINDIV': '64'
              }
 
@@ -228,7 +270,7 @@ if __name__ == '__main__':
         'sweep': [
             {'software': 'slim',
              'template': 'msms_match_selection.slim',
-             'N': 100000,
+             'N': 50000,
              'NINDIV': '64',
              'SELCOEFF': '0.01',
              }
@@ -262,6 +304,8 @@ if __name__ == '__main__':
         'conversions': conversion_settings
     }
 
+    #simulate_and_process(settings, parallel=True, max_sub_processes=20)
+
     #simulate_and_process(settings, parallel=False, max_sub_processes=22)
 
     settings = {
@@ -269,4 +313,4 @@ if __name__ == '__main__':
         'conversions': conversion_settings
     }
 
-    simulate_and_process(settings, parallel=False, max_sub_processes=16)
+    simulate_and_process(settings, parallel=True, max_sub_processes=16)

@@ -52,7 +52,6 @@ class PopGenSimulator(PopGenDataClass, ABC):
         self.seeds = None
         sim_num = int(re.findall(f".*{self._base_dir_surname()}_(.*)", self.base_dir)[0])
         self.config['base_seed'] = random.sample(range(100000000),  len(os.listdir(self.root_dir)))[sim_num]
-        print(f'Simulator created with settings: {self.config}')
 
     @abstractmethod
     def _retrieve_base_template_settings(self) -> Dict:
@@ -134,12 +133,15 @@ class PopGenSimulator(PopGenDataClass, ABC):
         id_num: (int) - ID of current simulate
 
         """
-        print(f'Running simulation {id_num}')
-        image, positions = self._load_sim_data(self._simulate(id_num))
-        if id_num == 1:
-            self.plot_example_image(image)
-        self.save_data(image, id_num, 'popgen_image')
-        self.save_data(positions, id_num, 'popgen_positions')
+        if self.data_exists(id_num=id_num, datatype='popgen_image') and self.data_exists(id_num=id_num, datatype='popgen_positions'):
+            pass
+        else:
+            print(f'Running simulation {id_num}')
+            image, positions = self._load_sim_data(self._simulate(id_num))
+            if id_num == 1:
+                self.plot_example_image(image)
+            self.save_data(image, id_num, 'popgen_image')
+            self.save_data(positions, id_num, 'popgen_positions')
 
     def run_simulations(self):
         """If simulations have not already been saved, runs the simulations"""
@@ -157,5 +159,3 @@ class PopGenSimulator(PopGenDataClass, ABC):
                 for i in range(last_saved_id+1, self.config['N']+1):
                     self._simulate_and_save(i)
             self._erase_simulated_images()
-        else:
-            print('Simulations have already been simulated')
