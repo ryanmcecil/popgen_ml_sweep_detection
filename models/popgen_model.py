@@ -7,6 +7,9 @@ from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import ConfusionMatrixDisplay
 import numpy as np
+import tensorflow as tf
+import csv
+from math import isnan
 
 
 class PopGenModel(ABC, PopGenDataClass):
@@ -25,13 +28,17 @@ class PopGenModel(ABC, PopGenDataClass):
         train_model: (bool) - If True, model will be trained.
         """
         super().__init__(config=config, root_dir=root_dir)
-        self.config = config
+        #print(self.data_dir)
+        self.config = config.copy()
         self.train_model = train_model
         self.model = self._load_model()
 
     def _exclude_save_keys(self) -> List:
         """Model configuration does not depend on test set"""
-        return ['test']
+        return ['test', 'validate']
+
+    def _exclude_equality_test_keys(self) -> List:
+        return ['test', 'validate']
 
     @abstractmethod
     def _model(self):
@@ -39,7 +46,7 @@ class PopGenModel(ABC, PopGenDataClass):
         raise NotImplementedError
 
     @abstractmethod
-    def _load(self):
+    def _load(self, load_from_file = True):
         """Loads the model"""
         raise NotImplementedError
 
@@ -55,6 +62,14 @@ class PopGenModel(ABC, PopGenDataClass):
                 model = self.train(model)
         return model
 
+    def write_val_accs_to_file(self, accs):
+        acc_csv = os.path.join(self.data_dir, 'validation_accs.csv')
+        with open(acc_csv, 'w') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(['Training', 'Validation Acc'])
+            for i, acc in enumerate(accs):
+                writer.writerow([i+1, acc])
+
     def train(self, model):
         """Trains the model, saves it, and then returns it
 
@@ -62,16 +77,39 @@ class PopGenModel(ABC, PopGenDataClass):
         ----------
         model: Either an ML model or a statistic model
         """
+
+        # Check settings if ML
         data_generator = DataGenerator(self.config, load_training_data=True)
         if self.config['model']['type'] != 'statistic':
-            loss_file = os.path.join(self.base_dir, 'loss_log.csv')
-            csv_logger = CSVLogger(loss_file, append=True, separator=',')
-            model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
-            model.fit(data_generator, epochs=self.config['train']['training']['epochs'], verbose=1,
-                      validation_data=data_generator.get_validation_data(), callbacks=[csv_logger])
+            val_x, val_y = data_generator.get_validation_data()
+            num_trainings = 1
+            if 'best_of' in self.config['train']['training']:
+                num_trainings = self.config['train']['training']['best_of']
+                print(f'Training the model {num_trainings} times and using the best validation accuracy')
+
+            # Train the model
+            best_acc = 0
+            accs = []
+            for i in range(num_trainings):
+                tf.keras.backend.clear_session()
+                model, _ = self._load(load_from_file=False)
+                loss_file = os.path.join(self.base_dir, 'loss_log.csv')
+                csv_logger = CSVLogger(loss_file, append=True, separator=',')
+                model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
+                history = model.fit(data_generator, epochs=1, initial_epoch=0, verbose=1, callbacks=[csv_logger])
+                model.fit(data_generator, epochs=self.config['train']['training']['epochs'], initial_epoch=1,
+                          verbose=1, callbacks=[csv_logger])
+                _, validation_acc = model.evaluate(val_x, val_y)
+                accs.append(validation_acc)
+                if validation_acc > best_acc:
+                    best_acc = validation_acc
+                    model.save(os.path.join(self.data_dir, 'model'))
+            self.write_val_accs_to_file(accs)
+            tf.keras.backend.clear_session()
+            model, _ = self._load()
         else:
             model.fit(data_generator)
-        model.save(os.path.join(self.data_dir, 'model'))
+            model.save(os.path.join(self.data_dir, 'model'))
         return model
 
     def _base_dir_surname(self) -> str:
@@ -111,16 +149,21 @@ class PopGenModel(ABC, PopGenDataClass):
             predictions = []
         classifications = []
         labels = []
-        if test_in_batches:
-            generator = data_generator.generator('test', batch_size=batch_size)
-        else:
+        if not test_in_batches or self.config['model']['type'] == 'statistic':
             generator = data_generator.generator('test', batch_size=1)
+        else:
+            generator = data_generator.generator('test', batch_size=batch_size)
         for x, y in generator:
             prediction = self.model.predict(x)
-            if prediction_values:
-                predictions += list(np.squeeze(prediction))
-            classifications += list(self._classify(prediction))
-            labels += list(y)
+            if prediction.size != 0:
+                classifications += list(self._classify(prediction))
+                if prediction_values:
+                    if not test_in_batches or self.config['model']['type'] == 'statistic':
+                        prediction = [float(prediction)]
+                    else:
+                        prediction = list(np.squeeze(prediction))
+                    predictions += prediction
+                labels += list(y)
         if prediction_values:
             outputs.append(predictions)
         if classification_values:

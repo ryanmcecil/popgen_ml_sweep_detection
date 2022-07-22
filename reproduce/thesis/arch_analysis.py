@@ -1,10 +1,35 @@
 from typing import Dict, List
+from reproduce.thesis.architectures_to_test import architectures_to_test
+import os, csv
+import tensorflow as tf
 from util.util import getGPU
 from models.retrieve_model import retrieve_model
-from matplotlib import pyplot as plt
-import os
-import tensorflow as tf
-import copy
+from sklearn.metrics import roc_auc_score
+
+
+def imagene_model_config() -> Dict:
+    """
+    Returns
+    -------
+    Dict: Configuration with model equivalent to Imagene model from
+        https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2927-x
+
+    """
+    model_config = {
+        'type': 'ml',
+        'name': 'imagene',
+        'image_height': 128,
+        'image_width': 128,
+        'relu': True,
+        'max_pooling': True,
+        'filters': 32,
+        'depth': 3,
+        'convolution': True,
+        'kernel_height': 3,
+        'kernel_width': 3,
+        'num_dense_layers': 1
+    }
+    return model_config
 
 
 def imagene_sim_config(selection_coeff: str) -> Dict:
@@ -68,62 +93,6 @@ def imagene_conversion_config(sorting: str = 'None') -> List:
     return conversion_config
 
 
-def imagene_model_config() -> Dict:
-    """
-    Returns
-    -------
-    Dict: Configuration with model equivalent to Imagene model from
-        https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2927-x
-
-    """
-    model_config = {
-        'type': 'ml',
-        'name': 'imagene',
-        'convolution': True,
-        'max_pooling': True,
-        'relu': True,
-        'filters': 32,
-        'depth': 3,
-        'kernel_size': 3,
-        'num_dense_layers': 1
-    }
-    return model_config
-
-
-def train_test_sortings(sim_config: Dict,
-                        conversion_config: List,
-                        train_config: Dict,
-                        model_config: Dict,
-                        output_file: str):
-    """Trains and tests each sorting. Stores results in confusion matrices and saves png.
-
-    Parameters
-    ----------
-    sim_config: (Dict) - Simulation configuration
-    conversion_config: (List) - Conversion configuration
-    train_config: (Dict) - Training configuration
-    model_config: (Dict) - Model configuration
-    output_file: (str) - Png output file to save results
-    """
-    sortings = ('None', 'Rows', 'Cols', 'RowsCols')
-    fix, axes = plt.subplots(1, 4, figsize=(15, 5))
-    for sorting, ax in zip(sortings, axes.flatten()):
-        conversion_config[0]['sorting'] = sorting
-        config = {
-            'train': {'simulations': copy.deepcopy(sim_config),
-                      'conversions': copy.deepcopy(conversion_config),
-                      'training': copy.deepcopy(train_config)},
-            'model': copy.deepcopy(model_config)
-        }
-        tf.keras.backend.clear_session()
-        imagene = retrieve_model(config)(config)
-        imagene.test(plot_cm=True, ax=ax, test_in_batches=True)
-        ax.title.set_text(sorting)
-        print(f'{sorting} has been tested')
-    plt.tight_layout()
-    plt.savefig(output_file)
-
-
 def get_training_settings() -> Dict:
     """
     Returns
@@ -141,10 +110,37 @@ def get_training_settings() -> Dict:
 
 if __name__ == '__main__':
     getGPU()
-    print('---------------------------------')
-    print('Testing Imagene Sortings')
-    train_test_sortings(imagene_sim_config('0.01'),
-                        imagene_conversion_config(),
-                        get_training_settings(),
-                        imagene_model_config(),
-                        os.path.join(os.getcwd(), 'reproduce/imagene/msms/results/imagene_msms_cnm_results.png'))
+    results_file = os.path.join(os.getcwd(), 'reproduce/thesis/results/arch_analysis.csv')
+
+    tested_archs = {}
+    # if os.path.isfile(results_file):
+    #     with open(results_file, 'r') as csv_file:
+    #         reader = csv.reader(csv_file)
+    #         for row in reader:
+    #             tested_archs[row[0]] = row[1]
+
+    with open(results_file, 'w') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(['Architecture', 'Accuracy', 'AUC', 'Parameters'])
+
+        for arch in architectures_to_test():
+            if arch[0] not in tested_archs:
+                config = {
+                    'train': {'simulations': imagene_sim_config('0.01'),
+                              'conversions': imagene_conversion_config('Rows'),
+                              'training': get_training_settings()},
+                    'model': arch[1]
+                }
+                tf.keras.backend.clear_session()
+                imagene = retrieve_model(config)(config)
+                print(imagene.model.summary())
+                prediction_vals, label_vals, acc_val = imagene.test(prediction_values=True, label_values=True, accuracy_value=True, test_in_batches=True)
+                num_parameters = imagene.number_of_parameters()
+                roc_auc = roc_auc_score(label_vals, prediction_vals)
+                print(acc_val)
+                print(roc_auc)
+                writer.writerow([arch[0], f'{acc_val:.3f}', f'{roc_auc:.3f}', num_parameters])
+            else:
+                pass
+                #writer.writerow([arch[0], tested_archs[arch[0]]])
+

@@ -11,3 +11,12 @@
 /no_data_push_to_server.sh
 /update_from_server.sh
 /add_path.sh
+/push_to_alfie.sh
+/update_from_alfie.sh
+/clear_training_files.py
+/main.py
+
+/reproduce/thesis2
+/reproduce/thesis
+/reproduce/imagene
+/reproduce/sfs

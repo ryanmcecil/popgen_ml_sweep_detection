@@ -87,6 +87,9 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
         Iterable: Batch of (x, y) or if retain_sim_location is set to true, batch of (x ,y, filenames, simulators)
         """
 
+        if len(data) == 0:
+            return None
+
         # Data is of form (label, tuple_of_files)
         y = [self._convert_label(label) for label, _ in data]
         y = np.asarray(y)
@@ -130,13 +133,17 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
         """Prepares training and/or testing data"""
 
         if self.load_training_data or 'test' not in self.config:
-            assert self.config['train']['training']['train_proportion'] + \
-                   self.config['train']['training']['validate_proportion'] + \
-                   self.config['train']['training']['test_proportion'] == 1
+            loc = 'train'
+        else:
+            loc = 'test'
+
+        assert self.config[loc]['training']['train_proportion'] + \
+               self.config[loc]['training']['validate_proportion'] + \
+               self.config[loc]['training']['test_proportion'] == 1
 
         # Load data for each simulation
         train, test, validate = [], [], []
-        for label, sim_config_list in self.config['train']['simulations'].items():
+        for label, sim_config_list in self.config[loc]['simulations'].items():
             for sim_config in sim_config_list:
                 simulator = retrieve_simulator(sim_config['software'])(sim_config,
                                                                        parallel=True,
@@ -144,7 +151,7 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
                 simulator.run_simulations()
 
                 conversion_files = []
-                for processor_config in self.config['train']['conversions']:
+                for processor_config in self.config[loc]['conversions']:
                     processor = retrieve_processor(processor_config['conversion_type'])(config=processor_config,
                                                                                         simulator=simulator,
                                                                                         parallel=True,
@@ -161,27 +168,20 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
 
                 # Pass converted data to train, validate, test based on specified proportions
                 data = zip(*conversion_files)
-                if self.load_training_data or 'test' not in self.config:
-                    train_num = int(simulator.config['N'] * self.config['train']['training']['train_proportion'])
-                    validate_num = int(
-                        simulator.config['N'] * self.config['train']['training']['validate_proportion']) + train_num
-                    for i, tuple_of_files in enumerate(data):
-                        if i < train_num:
-                            train.append((label, tuple_of_files))
-                        elif i < validate_num:
-                            validate.append((label, tuple_of_files))
-                        else:
-                            test.append((label, tuple_of_files))
-                else:
-                    for i, tuple_of_files in enumerate(data):
+                train_num = int(simulator.config['N'] * self.config[loc]['training']['train_proportion'])
+                validate_num = int(
+                    simulator.config['N'] * self.config[loc]['training']['validate_proportion']) + train_num
+                for i, tuple_of_files in enumerate(data):
+                    if i < train_num:
+                        train.append((label, tuple_of_files))
+                    elif i < validate_num:
+                        validate.append((label, tuple_of_files))
+                    else:
                         test.append((label, tuple_of_files))
 
         # Return data
-        if self.load_training_data or 'test' not in self.config:
-            random.shuffle(train)
-            return train, validate, test
-        else:
-            return None, None, test
+        random.shuffle(train)
+        return train, validate, test
 
     def on_epoch_end(self):
         """Shuffle the data at the end of every epoch"""

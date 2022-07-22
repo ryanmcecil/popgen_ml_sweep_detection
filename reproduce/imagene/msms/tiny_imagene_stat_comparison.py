@@ -105,7 +105,8 @@ def compare_model_to_msms_imagene_statistics(model_config, output_file):
         writer.writerows(rows)
 
 
-def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename: str):
+def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename: str,
+                                              imagene_sim_config_func, conversions_func):
     """Plots model and statistic accuracies, and a correlation matrix between the prediction outputs
 
     Parameters
@@ -124,12 +125,11 @@ def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename:
 
     # Get statistic data
     for stat in all_statistcs():
-        conversions = imagene_conversion_config()
         if stat not in all_image_and_position_statistics():
             print(f'Testing {stat}')
             stat_config = {
-                'train': {'simulations': imagene_sim_config('0.01'),
-                          'conversions': conversions,
+                'train': {'simulations': imagene_sim_config_func('0.01'),
+                          'conversions': conversions_func(),
                           'training': stat_training_settings()},
                 'model': stat_model_config(name=stat)
             }
@@ -166,4 +166,4 @@ if __name__ == '__main__':
                   'training': get_training_settings()},
         'model': tiny_imagene_model_config()
     }
-    stat_comparison_plot_accs_and_corr_matrix(model_config,'reproduce/imagene/msms/results/tiny_imagene')
+    stat_comparison_plot_accs_and_corr_matrix(model_config,'reproduce/imagene/msms/results/tiny_imagene', imagene_sim_config, imagene_conversion_config)

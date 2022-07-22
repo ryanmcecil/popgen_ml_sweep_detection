@@ -4,6 +4,7 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import tensorflow as tf
 from util.util import getGPU
+from models.retrieve_model import retrieve_model
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -40,18 +41,18 @@ if __name__ == '__main__':
              'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
              'FREQ': '`bc <<< \'scale=6; 1/100\'`',
              'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-             'SELCOEFF': '0.01',
+             'SELCOEFF': '0.005',
              }
         ]
     }
 
     conversion_settings = [{'conversion_type': 'imagene',
-                            'sorting': 'Rows',
+                            'sorting': 'None',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
                             }]
 
-    training_settings = {'epochs': 5,
+    training_settings = {'epochs': 10,
                          'batch_size': 64,
                          'train_proportion': 0.8,
                          'validate_proportion': 0.1,
@@ -60,12 +61,17 @@ if __name__ == '__main__':
 
     model_settings = {
         'type': 'ml',
-        'name': 'imagene',
-        'max_pooling': True,
-        'filters': 1,
-        'depth': 1,
+        'name': 'imasortgene',
+        'conv_depth': 3,
+        'dense_depth': 3,
+        'units': 128,
+        'filters': 32,
         'kernel_size': 3,
-        'num_dense_layers': 0
+        'image_height': 128,
+        'image_width': 128,
+        'depth': 3,
+        'num_dense_layers': 3,
+        'num_units': 128
     }
 
     settings = {
@@ -75,9 +81,15 @@ if __name__ == '__main__':
         'model': model_settings
     }
 
+    # config = {
+    #     'train': {'simulations': sim_settings,
+    #               'conversions': conversion_settings,
+    #               'training': training_settings},
+    #     'model': model_settings
+    # }
+
     getGPU()
 
-    imagene = retrive_ml_model(settings['model']['type'])(settings)
-    imagene.train()
+    imasortgene = retrieve_model(settings)(settings)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

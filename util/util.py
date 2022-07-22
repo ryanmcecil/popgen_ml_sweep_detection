@@ -3,6 +3,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = "3"
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
+
 def getGPU():
     """
     Grabs GPU. Sometimes Tensorflow attempts to use CPU when this is not called on my machine.
@@ -20,8 +21,14 @@ def getGPU():
             # Memory growth must be set before GPUs have been initialized
             print(e)
 
-def save_grey_image(image, filename: str):
+
+def save_grey_image(image, filename: str, colorbar: bool = True, xticks = None, yticks = None):
     plt.clf()
     plt.imshow(image, cmap='Greys_r')
-    plt.colorbar()
+    if colorbar:
+        plt.colorbar()
+    if xticks is not None:
+        plt.xticks(xticks)
+    if yticks is not None:
+        plt.yticks(yticks)
     plt.savefig(filename)

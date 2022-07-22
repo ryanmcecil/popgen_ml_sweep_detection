@@ -15,10 +15,13 @@ def tiny_imagene_model_config() -> Dict:
     model_config = {
         'type': 'ml',
         'name': 'imagene',
+        'convolution': True,
         'max_pooling': True,
+        'relu': True,
         'filters': 1,
         'depth': 1,
-        'kernel_size': 3,
+        'kernel_height': 3,
+        'kernel_width': 3,
         'num_dense_layers': 0
     }
     return model_config

@@ -25,7 +25,7 @@ class PopGenDataClass:
         """
         # Set config
         if config is not None:
-            self.config = config
+            self.config = config.copy()
 
             if root_dir is not None:
                 self.root_dir = root_dir
@@ -151,7 +151,13 @@ class PopGenDataClass:
                 config = self._read_config_from_yaml_file(os.path.join(directory, base_dir))
                 if self._config_is_equal(config):
                     return os.path.join(directory, base_dir)
-        base_dir = f'{directory}/{self._base_dir_surname()}_{len(os.listdir(directory)):04d}'
+        base_dir = None
+        for i in range(len(os.listdir(directory))):
+            if not os.path.isdir(f'{directory}/{self._base_dir_surname()}_{i:04d}'):
+                base_dir = f'{directory}/{self._base_dir_surname()}_{i:04d}'
+                break
+        if base_dir is None:
+            base_dir = f'{directory}/{self._base_dir_surname()}_{len(os.listdir(directory)):04d}'
         os.mkdir(base_dir)
         self._write_config_to_yaml_file(base_dir)
         return base_dir
@@ -175,6 +181,10 @@ class PopGenDataClass:
             return f'popgen_image_{id_num:09d}.npz'
         elif datatype == 'popgen_positions':
             return f'popgen_positions_{id_num:09d}.npy'
+        elif datatype[:-1] == 'popgen_pop_image':
+            return f'popgen_pop{datatype[-1]}_image_{id_num:09d}.npz'
+        elif datatype[:-1] == 'popgen_pop_positions':
+            return f'popgen_pop{datatype[-1]}_positions_{id_num:09d}.npy'
         else:
             raise NotImplementedError
 
@@ -200,6 +210,11 @@ class PopGenDataClass:
                 raise NotImplementedError
         elif 'popgen_positions' in file:
             return 'popgen_positions'
+        elif 'popgen_pop' in file:
+            if 'image' in file:
+                return f'popgen_pop_image{file[10]}'
+            elif 'positions' in file:
+                return f'popgen_pop_positions{file[10]}'
         else:
             raise NotImplementedError
 
@@ -219,13 +234,13 @@ class PopGenDataClass:
 
         """
         datatype = self._data_type_from_filename(file_path)
-        if datatype == 'popgen_image':
+        if 'image' in datatype:
             image = sparse.load_npz(file_path)
             if as_tensor:
                 return image.toarray()[np.newaxis, :, :, np.newaxis]
             else:
                 return image.toarray()
-        elif datatype == 'popgen_positions':
+        elif 'positions' in datatype:
             positions = np.load(file_path)
             if as_tensor:
                 return positions[np.newaxis, :]
@@ -290,10 +305,10 @@ class PopGenDataClass:
         if directory is None:
             directory = self.data_dir
         full_file_path = os.path.join(directory, file)
-        if datatype == 'popgen_image':
+        if 'image' in datatype:
             sparse_matrix = sparse.csr_matrix(data)
             sparse.save_npz(full_file_path, sparse_matrix, compressed=True)
-        elif datatype == 'popgen_positions':
+        elif 'positions' in datatype:
             np.save(full_file_path, data)
         else:
             raise NotImplementedError

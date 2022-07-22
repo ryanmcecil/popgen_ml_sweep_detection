@@ -4,6 +4,7 @@ import numpy as np
 from process.popgen_processor import PopGenProcessor
 from simulate.popgen_simulator import PopGenSimulator
 from typing import List
+import os
 
 
 def retrieve_processor(name: str):
@@ -16,6 +17,8 @@ def retrieve_processor(name: str):
     """
     if name == 'imagene':
         return ImaGeneProcessor
+    elif name == 'zero_padding_imagene':
+        return ZeroPaddingImaGeneProcessor
     elif name == 'raw_data':
         return RawPopGenData
     else:
@@ -30,7 +33,10 @@ class ImaGeneProcessor(PopGenProcessor):
             raise ValueError
 
     def conversion_datatype(self) -> str:
-        return 'popgen_image'
+        if 'pop' in self.config:
+            return f'popgen_pop_image{self.config["pop"]}'
+        else:
+            return 'popgen_image'
 
     def _sort(self, data: np.ndarray, ordering: str) -> np.ndarray:
         """Imagene type sorting modifed from https://github.com/mfumagalli/ImaGene/blob/master/ImaGene.py
@@ -133,7 +139,7 @@ class ImaGeneProcessor(PopGenProcessor):
 
         """
         dimensions = (self.config['resize_dimensions'], self.config['resize_dimensions'])
-        data = skimage.transform.resize(data, dimensions, anti_aliasing=True, mode='reflect')
+        data = skimage.transform.resize(data.astype(np.float32), dimensions, anti_aliasing=True, mode='reflect')
         data = np.where(data < 0.5, 0, 1)
         return data
 
@@ -154,6 +160,29 @@ class ImaGeneProcessor(PopGenProcessor):
 
         data = self._resize(data)
 
+        return data
+
+
+class ZeroPaddingImaGeneProcessor(ImaGeneProcessor):
+
+    def _resize(self, data: np.ndarray):
+        """Resize all images to same width using zero padding
+
+        Parameters
+        ----------
+        data: (np.ndarray) - data to be resized
+
+        Returns
+        -------
+        np.ndarray: resized data
+
+        """
+        assert self.config['resize_dimensions'] >= data.shape[1]
+        width = data.shape[1]
+        diff = self.config['resize_dimensions'] - width
+        pad1 = diff // 2
+        pad2 = self.config['resize_dimensions'] - width - pad1
+        data = np.pad(data, ((0,0), (pad1, pad2)), 'constant')
         return data
 
 
@@ -178,6 +207,11 @@ class RawPopGenData(PopGenProcessor):
             raise Exception('Datatype must be in RawPopGenData class config')
 
     def conversion_datatype(self) -> str:
+        if 'pop' in self.config:
+            if 'image' in self.config['datatype']:
+                return f'popgen_pop_image{self.config["pop"]}'
+            elif 'positions' in self.config['datatype']:
+                return f'popgen_pop_positions{self.config["pop"]}'
         return self.config['datatype']
 
     def _convert(self, data: np.ndarray) -> np.ndarray:
@@ -210,6 +244,7 @@ if __name__ == '__main__':
 
         for label, sim_config_list in settings['simulations'].items():
             for sim_config in sim_config_list:
+                print(sim_config)
                 simulator = retrieve_simulator(sim_config['software'])(sim_config,
                                                                        parallel=parallel,
                                                                        max_sub_processes=max_sub_processes)
@@ -278,6 +313,11 @@ if __name__ == '__main__':
     }
 
     conversion_settings = [{'conversion_type': 'imagene',
+                          'sorting': 'None',
+                          'min_minor_allele_freq': 0.01,
+                          'resize_dimensions': 128
+                          },
+                           {'conversion_type': 'imagene',
                             'sorting': 'Rows',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
@@ -289,11 +329,6 @@ if __name__ == '__main__':
                             },
                            {'conversion_type': 'imagene',
                             'sorting': 'RowsCols',
-                            'min_minor_allele_freq': 0.01,
-                            'resize_dimensions': 128
-                            },
-                           {'conversion_type': 'imagene',
-                            'sorting': 'None',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
                             }
@@ -313,4 +348,95 @@ if __name__ == '__main__':
         'conversions': conversion_settings
     }
 
-    simulate_and_process(settings, parallel=True, max_sub_processes=16)
+    sweeps = [
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 1,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.0025',
+         'SWEEPPOP': 1,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 2,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.0025',
+         'SWEEPPOP': 2,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 3,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.0025',
+         'SWEEPPOP': 2,
+         },
+    ]
+
+    for sweep in sweeps:
+        sim_settings = {
+            'neutral': [
+                {'software': 'slim',
+                 'template': 'schaffner_model_neutral.slim',
+                 'N': 10,
+                 'NINDIV': '64'
+                 }
+
+            ],
+            'sweep': [
+                sweep
+            ]
+        }
+
+        conversion_settings = [
+                               {'conversion_type': 'imagene',
+                                'sorting': 'Rows',
+                                'min_minor_allele_freq': 0.01,
+                                'resize_dimensions': 128,
+                                'pop': 1
+                                },
+                                {'conversion_type': 'imagene',
+                                 'sorting': 'Rows',
+                                 'min_minor_allele_freq': 0.01,
+                                 'resize_dimensions': 128,
+                                 'pop': 2
+                                 },
+                                {'conversion_type': 'imagene',
+                                 'sorting': 'Rows',
+                                 'min_minor_allele_freq': 0.01,
+                                 'resize_dimensions': 128,
+                                 'pop': 3
+                                 },
+                               ]
+
+        settings = {
+            'simulations': sim_settings,
+            'conversions': conversion_settings
+        }
+
+        simulate_and_process(settings, parallel=True, max_sub_processes=3)

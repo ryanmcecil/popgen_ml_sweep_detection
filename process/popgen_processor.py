@@ -69,13 +69,14 @@ class PopGenProcessor(PopGenDataClass, ABC):
         datatype = self.conversion_datatype()
         data = self.simulator.load_data(id_num=id_num, datatype=datatype)
         data = self._convert(data)
-        if datatype == 'popgen_image':
-            if id_num == 1:
-                self.plot_example_image(data)
+        if 'image' in datatype:
+            if id_num < 5:
+                self.plot_example_image(data, name=f'example{id_num}')
         self.save_data(data, id_num, datatype)
 
     def run_conversions(self):
         """If data have not already been converted, run processing"""
+
         last_saved_id = self._last_saved_id(self.conversion_datatype())
 
         if last_saved_id < self.simulator.config['N']:
