@@ -7,6 +7,16 @@
 - *On convolutional neural networks for selection inference: revealing the lurking role of preprocessing, and the surprising effectiveness of summary statistics* by Ryan M. Cecil and [Lauren Sugden](https://www.duq.edu/faculty-and-staff/lauren-sugden.php).
     - [[Preprint](https://www.biorxiv.org/content/10.1101/2023.02.26.530156v1)]
 
+## Table of Contents
+- [StatML Sweep Detection Analyses and Tools for Population Genetics](#statml-sweep-detection-analyses-and-tools-for-population-genetics)
+  - [Articles](#articles)
+  - [Table of Contents](#table-of-contents)
+  - [Reproduction of Analyses](#reproduction-of-analyses)
+    - [Steps to get started](#steps-to-get-started)
+    - [Running Reproduction Code](#running-reproduction-code)
+  - [Tools](#tools)
+  - [Acknowledgements](#acknowledgements)
+
 
 ## Reproduction of Analyses
 
@@ -47,7 +57,7 @@ Finally, to ensure that everything is in working order, please run the following
 python3 test.py
 ```
 
-The python code in the file will generate hard and soft sweep simulations using SLiM, convert them to images and process them using an image resizing algorithm, train a CNN on the data, then print the test accuracy.
+The python code in the file will generate hard and soft sweep simulations using MSMS, convert them to images and process them using an image resizing algorithm, train a CNN on the data, then print the test accuracy.
 
 ### Running Reproduction Code
 
@@ -58,7 +68,7 @@ The code to reproduce the results of the above works may be found in the `reprod
 - Simulation of demographic models using [MSMS](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2916717/) and [SLiM](https://messerlab.org/slim/).
   - The code for doing so is in the `simulate` directory. An example for generating MSMS simulations can be found at the bottom of `simulate/popgen_simulators.py`.
 - Pre-processing simulations
-  - Contained in the `process` directory. Some of the different conversions implemented in `process/popgen_processors.py` are Imagene resizing and row sorting, zero padding, and trimming.
+  - Contained in the `process` directory. The main pre-processing pipelines in `process/popgen_processors.py` are Imagene resizing and row sorting, zero padding, and trimming.
 - Implementing and training of StatML models on processed data
   - The training and model code is in `models`. 
     - `models/popgen_mlmodels.py` contains the machine learning models.
