@@ -16,6 +16,7 @@
 /clear_training_files.py
 /main.py
 
+<<<<<<< HEAD
 /venv
 
 
@@ -154,3 +155,9 @@ reused_docstrings.txt
 /reproduce/imagene_results/msms/results/
 /reproduce/imagene_results/slim/results/
 /data/genetic/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf
+=======
+/reproduce/thesis2
+/reproduce/thesis
+/reproduce/imagene
+/reproduce/sfs
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83

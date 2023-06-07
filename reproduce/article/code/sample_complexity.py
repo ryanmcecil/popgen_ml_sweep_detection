@@ -113,6 +113,7 @@ def test_sample_complexity(sim_conversion_training_config, save_dir: str, genera
         del data_accs['Training Set Size']
 
     plot_filename = os.path.join(save_dir, 'sample_complexity.png')
+<<<<<<< HEAD
     actual_train_sample_sizes = [int(0.8 * sample_size) for sample_size in train_sample_sizes]
     for name, accs in data_accs.items():
         plt.plot(actual_train_sample_sizes, accs, label=name)
@@ -123,5 +124,12 @@ def test_sample_complexity(sim_conversion_training_config, save_dir: str, genera
         plt.axvline(x=int(0.8*num_training_samples), color='r', label='Size Used', linestyle='dashed')
     else:
         plt.axvline(x=16_000, color='r', label='Size Used', linestyle='dashed')
+=======
+    for name, accs in data_accs.items():
+        plt.plot(train_sample_sizes, accs, label=name)
+    plt.xlabel('Training Dataset Size')
+    plt.ylabel('Accuracy')
+    plt.grid()
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     plt.legend()
     plt.savefig(plot_filename)

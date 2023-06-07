@@ -174,5 +174,9 @@ if __name__ == '__main__':
                   'training': get_training_settings()},
         'model': tiny_imagene_model_config()
     }
+<<<<<<< HEAD:reproduce/imagene_results/msms/tiny_imagene_stat_comparison.py
     stat_comparison_plot_accs_and_corr_matrix(
         model_config, 'reproduce/imagene/msms/results/tiny_imagene', imagene_sim_config, imagene_conversion_config)
+=======
+    stat_comparison_plot_accs_and_corr_matrix(model_config,'reproduce/imagene/msms/results/tiny_imagene', imagene_sim_config, imagene_conversion_config)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83:reproduce/imagene/msms/tiny_imagene_stat_comparison.py

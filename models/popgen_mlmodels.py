@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 import os
+=======
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Activation
+from tensorflow.keras import Input, regularizers
+from tensorflow.keras import initializers
+import tensorflow as tf
+from models.popgen_model import PopGenModel
+import numpy as np
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 from abc import ABC, ABCMeta
 
 import numpy as np
@@ -12,14 +21,24 @@ from tensorflow.keras.layers import (Activation, Attention, Conv2D, Dense,
 from tensorflow.keras.models import load_model
 
 from generator.data_generator import DataGenerator
+<<<<<<< HEAD
 from models.popgen_model import PopGenModel
 from util.util import save_grey_image
+=======
+from tensorflow.keras import backend
+import shap
+from matplotlib import pyplot as plt
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 class MLPopGenModel(PopGenModel, ABC):
     """Abstract class for supervised machine learning models built to detect selective sweeps"""
 
+<<<<<<< HEAD
     def _load(self, load_from_file: bool = True):
+=======
+    def _load(self, load_from_file: bool=True):
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         """Loads the ML model"""
         model = self._model()
         print(self.data_dir)
@@ -31,8 +50,12 @@ class MLPopGenModel(PopGenModel, ABC):
 
     def number_of_parameters(self):
         """Returns number of trainable parameters in ML model."""
+<<<<<<< HEAD
         trainable_count = np.sum([backend.count_params(w)
                                  for w in self.model.trainable_weights])
+=======
+        trainable_count = np.sum([backend.count_params(w) for w in self.model.trainable_weights])
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         return trainable_count
 
     def _classify(self, data: np.ndarray) -> np.ndarray:
@@ -52,8 +75,11 @@ class MLPopGenModel(PopGenModel, ABC):
         generate_results: (bool) - If True, re-computes shap values and saves them before generating plots
         """
 
+<<<<<<< HEAD
         from util import colors
 
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         # Generate and save shap values
         if generate_results:
 
@@ -63,8 +89,12 @@ class MLPopGenModel(PopGenModel, ABC):
             assert num_images > num_shap_deep_explainer_images
 
             # Load neutral and sweep images from test set
+<<<<<<< HEAD
             data_generator = DataGenerator(
                 self.config, load_training_data=False)
+=======
+            data_generator = DataGenerator(self.config, load_training_data=False)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             neutrals = []
             sweeps = []
             to_explain = []
@@ -81,8 +111,12 @@ class MLPopGenModel(PopGenModel, ABC):
             to_explain = np.concatenate(to_explain, axis=0)
             neutrals = np.concatenate(neutrals, axis=0)[0:num_images]
             sweeps = np.concatenate(sweeps, axis=0)[0:num_images]
+<<<<<<< HEAD
             X = np.concatenate([neutrals[0:num_shap_deep_explainer_images],
                                sweeps[0:num_shap_deep_explainer_images]], axis=0)
+=======
+            X = np.concatenate([neutrals[0:num_shap_deep_explainer_images], sweeps[0:num_shap_deep_explainer_images]], axis=0)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
             e = shap.DeepExplainer(self.model, X)
 
@@ -90,6 +124,7 @@ class MLPopGenModel(PopGenModel, ABC):
             neutral_shap_values = []
             i = 0
             while i*batch_size < num_images:
+<<<<<<< HEAD
                 sweep_shap_values.append(e.shap_values(
                     sweeps[i*batch_size:(i+1)*batch_size])[0])
                 neutral_shap_values.append(e.shap_values(
@@ -133,11 +168,42 @@ class MLPopGenModel(PopGenModel, ABC):
         # shap.image_plot(shap_values, zero_image, np.asarray([['Neutral', 'Sweep'], ['Sweep', 'Neutral']]), show=False, width=40)
         # plt.savefig(os.path.join(save_dir, 'shap_mean_explanations.png'))
         # plt.clf()
+=======
+                print(i)
+                sweep_shap_values.append(e.shap_values(sweeps[i*batch_size:(i+1)*batch_size])[0])
+                neutral_shap_values.append(e.shap_values(neutrals[i*batch_size:(i+1)*batch_size])[0])
+                i += 1
+            sweep_shap_values = np.mean(np.concatenate(sweep_shap_values, axis=0), axis=0, keepdims=True)
+            neutral_shap_values = np.mean(np.concatenate(neutral_shap_values, axis=0), axis=0, keepdims=True)
+            to_explain_shap_values = e.shap_values(to_explain)
+
+            np.save(os.path.join(self.data_dir, 'sweep_shap_values.npy'), sweep_shap_values)
+            np.save(os.path.join(self.data_dir, 'neutral_shap_values.npy'), neutral_shap_values)
+            np.save(os.path.join(self.data_dir, 'to_explain_shap_values.npy'), to_explain_shap_values)
+            np.save(os.path.join(self.data_dir, 'to_explain.npy'), to_explain)
+
+        # Load saved shap values and plot results
+        sweep_shap_values = np.load(os.path.join(self.data_dir, 'sweep_shap_values.npy'))
+        neutral_shap_values = np.load(os.path.join(self.data_dir, 'neutral_shap_values.npy'))
+        to_explain_shap_values = np.load(os.path.join(self.data_dir, 'to_explain_shap_values.npy'))
+        to_explain_images = np.load(os.path.join(self.data_dir, 'to_explain.npy'))
+
+        # Plot mean shap vals
+        shap_values = np.concatenate([neutral_shap_values, sweep_shap_values], axis=0)
+        zero_image = np.zeros(shape=shap_values.shape)
+        shap.image_plot(shap_values, zero_image, np.asarray([['Neutral', 'Sweep'], ['Sweep', 'Neutral']]), show=False)
+        plt.savefig(os.path.join(save_dir, 'shap_mean_explanations.png'))
+        plt.clf()
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         # Plot individual shap vals
         shap.image_plot(to_explain_shap_values[0],
                         to_explain_images,
+<<<<<<< HEAD
                         np.asarray([['Neutral'], ['Sweep']]),
+=======
+                        np.asarray([['Neutral'],['Sweep']]),
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                         show=False,
                         true_labels=['Neutral', 'Sweep'])
         plt.savefig(os.path.join(save_dir, 'shap_explanations.png'))
@@ -168,6 +234,11 @@ def retrieve_ml_model(name: str) -> MLPopGenModel:
         return ImaGene
     elif name == 'deepset':
         return DeepSet
+<<<<<<< HEAD
+=======
+    elif name == 'imasortgene':
+        return ImaSortGene
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     else:
         raise NotImplementedError
 
@@ -184,8 +255,12 @@ class ImaGene(MLPopGenModel):
         MLSweepModel: The Imagene CNN with specified settings dictated by self.config
 
         """
+<<<<<<< HEAD
         inpt = Input(shape=(self.config['model']['image_height'],
                      self.config['model']['image_width'], 1), name='input')
+=======
+        inpt = Input(shape=(self.config['model']['image_height'], self.config['model']['image_width'], 1), name='input')
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         conv_regularizer = regularizers.l1_l2(l1=0.005, l2=0.005)
         dense_regularizer = None
@@ -202,8 +277,12 @@ class ImaGene(MLPopGenModel):
                                         self.config['model']['kernel_width']),
                            strides=(1, 1),
                            activation=None, padding='valid', use_bias=False,
+<<<<<<< HEAD
                            kernel_initializer=initializers.RandomNormal(
                                mean=0, stddev=1),
+=======
+                           kernel_initializer=initializers.RandomNormal(mean=0, stddev=1),
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                            kernel_regularizer=conv_regularizer)(x)
 
             if self.config['model']['relu']:
@@ -214,11 +293,17 @@ class ImaGene(MLPopGenModel):
 
         x = Flatten()(x)
         for i in range(self.config['model']['num_dense_layers']):
+<<<<<<< HEAD
             x = Dense(units=64, activation='relu',
                       kernel_regularizer=dense_regularizer, use_bias=False)(x)
 
         x = Dense(units=1, activation='sigmoid',
                   kernel_regularizer=dense_regularizer, use_bias=False)(x)
+=======
+            x = Dense(units=64, activation='relu', kernel_regularizer=dense_regularizer, use_bias=False)(x)
+
+        x = Dense(units=1, activation='sigmoid', kernel_regularizer=dense_regularizer, use_bias=False)(x)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         model = MLSweepModel(inputs=inpt, outputs=x)
         return model
 
@@ -251,8 +336,12 @@ class ImaGene(MLPopGenModel):
         layer_num = 1
         for i, name in enumerate(names):
             if 'conv' in name or 'max_pooling' in name or 'activation' in name:
+<<<<<<< HEAD
                 save_grey_image(
                     layer_outs[i][0, :, :, 0], base_filename + f'_processed_{layer_num}_{name}.png')
+=======
+                save_grey_image(layer_outs[i][0, :, :, 0], base_filename + f'_processed_{layer_num}_{name}.png')
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                 layer_num += 1
 
     def visualize_layer_outputs(self, output_filename: str, num: int):
@@ -314,8 +403,12 @@ class ImaGene(MLPopGenModel):
             if 'dense' in layer.name:
                 weights = layer.get_weights()[0]
                 initial_width = self.config['model']['image_width']
+<<<<<<< HEAD
                 image_width = initial_width - \
                     (self.config['model']['kernel_width'] - 1)
+=======
+                image_width = initial_width - (self.config['model']['kernel_width'] - 1)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                 image_height = layer.input_shape[1] // image_width
                 image = np.reshape(weights, (image_height, image_width))
                 save_grey_image(image, output_filename + 'dense.png')
@@ -323,6 +416,7 @@ class ImaGene(MLPopGenModel):
         # Plot the convolution layer
         for layer in self.model.layers:
             if 'conv' in layer.name:
+<<<<<<< HEAD
                 if layer.get_weights()[0].shape[3] == 1:
                     kernel_weights = layer.get_weights()[0][:, :, 0, 0]
                     save_grey_image(
@@ -332,6 +426,10 @@ class ImaGene(MLPopGenModel):
                         kernel_weights = layer.get_weights()[0][:, :, 0, j]
                         save_grey_image(
                             kernel_weights, output_filename + f'conv_{j}.png')
+=======
+                kernel_weights = layer.get_weights()[0][:, :, 0, 0]
+                save_grey_image(kernel_weights, output_filename + 'conv.png')
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 class DeepSet(MLPopGenModel):
@@ -345,12 +443,20 @@ class DeepSet(MLPopGenModel):
 
         """
 
+<<<<<<< HEAD
         input = Input(shape=(self.config['model']['image_height'],
                       self.config['model']['image_width'], 1), name='input')
 
         x = input
         for i in range(self.config['model']['depth']):
             x = Conv2D(filters=self.config['model']['filters'], kernel_size=(1, self.config['model']['kernel_size']),
+=======
+        input = Input(shape=(self.config['model']['image_height'], self.config['model']['image_width'], 1), name='input')
+
+        x = input
+        for i in range(self.config['model']['depth']):
+            x = Conv2D(filters=self.config['model']['filters'], kernel_size=(1,self.config['model']['kernel_size']),
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                        activation='relu', padding='valid')(x)
 
         x = tf.reduce_mean(x, axis=1)
@@ -358,8 +464,12 @@ class DeepSet(MLPopGenModel):
         x = Flatten()(x)
 
         for i in range(self.config['model']['num_dense_layers']):
+<<<<<<< HEAD
             x = Dense(units=self.config['model']
                       ['num_units'], activation='relu')(x)
+=======
+            x = Dense(units=self.config['model']['num_units'], activation='relu')(x)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         x = Dense(units=1, activation='sigmoid')(x)
         model = MLSweepModel(inputs=input, outputs=x)

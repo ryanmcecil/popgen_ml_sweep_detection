@@ -6,6 +6,11 @@ import skimage.transform
 
 from process.popgen_processor import PopGenProcessor
 from simulate.popgen_simulator import PopGenSimulator
+<<<<<<< HEAD
+=======
+from typing import List
+import os
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 def retrieve_processor(name: str):
@@ -143,10 +148,15 @@ class ImaGeneProcessor(PopGenProcessor):
         np.ndarray: resized data
 
         """
+<<<<<<< HEAD
         dimensions = (self.config['resize_dimensions'],
                       self.config['resize_dimensions'])
         data = skimage.transform.resize(data.astype(
             np.float32), dimensions, anti_aliasing=True, mode='reflect')
+=======
+        dimensions = (self.config['resize_dimensions'], self.config['resize_dimensions'])
+        data = skimage.transform.resize(data.astype(np.float32), dimensions, anti_aliasing=True, mode='reflect')
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         data = np.where(data < 0.5, 0, 1)
         return data
 
@@ -189,6 +199,7 @@ class ZeroPaddingImaGeneProcessor(ImaGeneProcessor):
         diff = self.config['resize_dimensions'] - width
         pad1 = diff // 2
         pad2 = self.config['resize_dimensions'] - width - pad1
+<<<<<<< HEAD
         data = np.pad(data, ((0, 0), (pad1, pad2)), 'constant')
         return data
 
@@ -228,6 +239,9 @@ class ParingImaGeneProcessor(ImaGeneProcessor):
                 and self.config['sorting'] != 'Rows' and self.config['sorting'] != 'RowsCols':
             raise Exception('A valid sorting option was not specified')
 
+=======
+        data = np.pad(data, ((0,0), (pad1, pad2)), 'constant')
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         return data
 
 
@@ -357,7 +371,16 @@ if __name__ == '__main__':
     }
 
     conversion_settings = [{'conversion_type': 'imagene',
+<<<<<<< HEAD
                             'sorting': 'None',
+=======
+                          'sorting': 'None',
+                          'min_minor_allele_freq': 0.01,
+                          'resize_dimensions': 128
+                          },
+                           {'conversion_type': 'imagene',
+                            'sorting': 'Rows',
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
                             },
@@ -370,11 +393,14 @@ if __name__ == '__main__':
                             'sorting': 'Cols',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
+<<<<<<< HEAD
                             },
                            {'conversion_type': 'imagene',
                             'sorting': 'RowsCols',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                             }
                            ]
 
@@ -458,11 +484,16 @@ if __name__ == '__main__':
         }
 
         conversion_settings = [
+<<<<<<< HEAD
             {'conversion_type': 'imagene',
+=======
+                               {'conversion_type': 'imagene',
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                                 'sorting': 'Rows',
                                 'min_minor_allele_freq': 0.01,
                                 'resize_dimensions': 128,
                                 'pop': 1
+<<<<<<< HEAD
              },
             {'conversion_type': 'imagene',
              'sorting': 'Rows',
@@ -477,6 +508,22 @@ if __name__ == '__main__':
              'pop': 3
              },
         ]
+=======
+                                },
+                                {'conversion_type': 'imagene',
+                                 'sorting': 'Rows',
+                                 'min_minor_allele_freq': 0.01,
+                                 'resize_dimensions': 128,
+                                 'pop': 2
+                                 },
+                                {'conversion_type': 'imagene',
+                                 'sorting': 'Rows',
+                                 'min_minor_allele_freq': 0.01,
+                                 'resize_dimensions': 128,
+                                 'pop': 3
+                                 },
+                               ]
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         settings = {
             'simulations': sim_settings,

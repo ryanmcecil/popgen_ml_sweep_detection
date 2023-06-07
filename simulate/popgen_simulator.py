@@ -1,6 +1,10 @@
 import multiprocessing
 import os
 import random
+<<<<<<< HEAD
+=======
+import multiprocessing
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 import re
 import time
 from abc import ABC, abstractmethod
@@ -15,10 +19,15 @@ except ImportError:
     try:
         import importlib_resources as ilresources
     except ImportError:
+<<<<<<< HEAD
         raise ImportError(
             'Must install backport of importlib_resources if not using Python >= 3.7')
 import math
 
+=======
+        raise ImportError('Must install backport of importlib_resources if not using Python >= 3.7')
+import math
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 # Seed generated using os.urandom
 # Defines seeds for all simulations dependant on number of sim directory
 random.seed(434935399793924222151)
@@ -59,7 +68,11 @@ class PopGenSimulator(PopGenDataClass, ABC):
         self.image_datatypes = []
         self.pos_datatypes = []
         if 'template' in self.config and 'schaffner' in self.config['template']:
+<<<<<<< HEAD
             for k in [1, 2, 3]:
+=======
+            for k in [1,2,3]:
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                 self.image_datatypes.append(f'popgen_pop_image{k}')
                 self.pos_datatypes.append(f'popgen_pop_positions{k}')
         else:
@@ -83,8 +96,13 @@ class PopGenSimulator(PopGenDataClass, ABC):
 
     @abstractmethod
     def _load_and_save_sim_data(self,
+<<<<<<< HEAD
                                 file: str,
                                 id_num: int):
+=======
+                       file: str,
+                       id_num: int):
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         """Loads the simulate data from given file and returns the image and positions as np array
 
         Parameters
@@ -105,10 +123,16 @@ class PopGenSimulator(PopGenDataClass, ABC):
         """
         pass
 
+<<<<<<< HEAD
     def retrieve_max_or_min_width(self,
                                   pop: int = None,
                                   get_max: bool = True) -> int:
         """Returns the maximum or minimum width across all simulated images
+=======
+    def retrieve_max_width(self,
+                           pop: int=None) -> int:
+        """Returns the maximum width across all simulated images
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         Parameters
         ----------
@@ -121,19 +145,26 @@ class PopGenSimulator(PopGenDataClass, ABC):
 
         """
 
+<<<<<<< HEAD
         if get_max:
             start_filename = 'max_width'
         else:
             start_filename = 'min_width'
 
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         # Create max width directory to store max width values
         max_width_dir = os.path.join(self.base_dir, '')
         if not os.path.isdir(max_width_dir):
             os.mkdir(max_width_dir)
 
         # Check if we have already found max width
+<<<<<<< HEAD
         max_width_file = os.path.join(
             max_width_dir, f'{start_filename}_{self.config["N"]}.txt')
+=======
+        max_width_file = os.path.join(max_width_dir, f'max_width_{self.config["N"]}.txt')
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         if os.path.isfile(max_width_file):
             with open(max_width_file, 'r') as f:
                 max_width = int(f.readline())
@@ -144,13 +175,17 @@ class PopGenSimulator(PopGenDataClass, ABC):
                 """
                 return int(math.ceil(x / 10.0)) * 10
 
+<<<<<<< HEAD
             def rounddown(x):
                 return int(math.floor(x) / 10.0) * 10
 
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             # Find maximum width if not already found
             widths = []
             if pop is None:
                 for datatype in self.image_datatypes:
+<<<<<<< HEAD
                     for id_num in range(1, self.config['N']+1):
                         widths.append(self.load_data(
                             id_num=id_num, datatype=datatype).shape[1])
@@ -165,6 +200,17 @@ class PopGenSimulator(PopGenDataClass, ABC):
                 max_width = roundup(max(widths))
             else:
                 max_width = rounddown(min(widths))
+=======
+                    for id_num in range(1,self.config['N']+1):
+                        widths.append(self.load_data(id_num=id_num, datatype=datatype).shape[1])
+            else:
+                datatype = self.image_datatypes[pop-1]
+                for id_num in range(1, self.config['N'] + 1):
+                    widths.append(self.load_data(id_num=id_num, datatype=datatype).shape[1])
+
+            # Round up max width to nearest 10th digit
+            max_width = roundup(max(widths))
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
             # save max width so that it does not have to be recomputed
             with open(max_width_file, 'w') as f:
@@ -209,7 +255,11 @@ class PopGenSimulator(PopGenDataClass, ABC):
 
     def _simulate_and_save(self,
                            id_num: int,
+<<<<<<< HEAD
                            except_clause: bool = True):
+=======
+                           except_clause: bool=True):
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         """Simulates the genetic data using appropriate software and then saves the output data
 
         Parameters
@@ -237,10 +287,15 @@ class PopGenSimulator(PopGenDataClass, ABC):
 
     def run_simulations(self):
         """If simulations have not already been saved, runs the simulations"""
+<<<<<<< HEAD
         last_saved_image_ids = [self._last_saved_id(
             datatype) for datatype in self.image_datatypes]
         last_saved_position_ids = [self._last_saved_id(
             datatype) for datatype in self.pos_datatypes]
+=======
+        last_saved_image_ids = [self._last_saved_id(datatype) for datatype in self.image_datatypes]
+        last_saved_position_ids = [self._last_saved_id(datatype) for datatype in self.pos_datatypes]
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         last_saved_id = min(last_saved_image_ids + last_saved_position_ids)
         if last_saved_id < self.config['N']:
@@ -248,6 +303,7 @@ class PopGenSimulator(PopGenDataClass, ABC):
             if self.parallel:
                 pool = multiprocessing.Pool(self.max_sub_processes)
                 total_range = range(last_saved_id+1, self.config['N']+1)
+<<<<<<< HEAD
                 to_sim = [i for i in total_range if not all([self.data_exists(id_num=i, datatype=datatype)
                                                              for datatype in self.image_datatypes+self.pos_datatypes])]
                 print('Timing first simulation')
@@ -259,6 +315,18 @@ class PopGenSimulator(PopGenDataClass, ABC):
                 print(
                     f'Simulating all {len(to_sim)} populations will take approximately {total_time / 60**2:.2f} hours')
                 print(f"There are {len(to_sim)} left to simulate")
+=======
+                print('Timing first simulation')
+                to_sim = [i for i in total_range if not all([self.data_exists(id_num=i, datatype=datatype)
+                                                             for datatype in self.image_datatypes+self.pos_datatypes])]
+                # start_time = time.time()
+                # self._simulate_and_save(to_sim[0])
+                # seconds = time.time() - start_time
+                # print(f'One simulation took {seconds:.2f} seconds')
+                # total_time = len(to_sim)*seconds / self.max_sub_processes
+                # print(f'Simulating all {len(to_sim)} populations will take approximately {total_time / 60**2:.2f} hours')
+                # print(f"There are {len(to_sim)} left to simulate")
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                 pool.map(self._simulate_and_save, to_sim)
             else:
                 for i in range(last_saved_id+1, self.config['N']+1):

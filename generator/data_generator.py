@@ -140,8 +140,13 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
             loc = 'test'
 
         assert self.config[loc]['training']['train_proportion'] + \
+<<<<<<< HEAD
             self.config[loc]['training']['validate_proportion'] + \
             self.config[loc]['training']['test_proportion'] == 1
+=======
+               self.config[loc]['training']['validate_proportion'] + \
+               self.config[loc]['training']['test_proportion'] == 1
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         # Load data for each simulation
         train, test, validate = [], [], []
@@ -170,8 +175,12 @@ class DataGenerator(keras.utils.Sequence, PopGenDataClass):
 
                 # Pass converted data to train, validate, test based on specified proportions
                 data = zip(*conversion_files)
+<<<<<<< HEAD
                 train_num = int(
                     simulator.config['N'] * self.config[loc]['training']['train_proportion'])
+=======
+                train_num = int(simulator.config['N'] * self.config[loc]['training']['train_proportion'])
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                 validate_num = int(
                     simulator.config['N'] * self.config[loc]['training']['validate_proportion']) + train_num
                 for i, tuple_of_files in enumerate(data):

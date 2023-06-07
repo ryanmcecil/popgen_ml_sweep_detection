@@ -6,11 +6,20 @@ import allel
 import numpy as np
 
 from generator.data_generator import DataGenerator
+<<<<<<< HEAD
 from models.popgen_model import PopGenModel
 
 
 def all_statistics():
     return ['ihs_maxabs', 'tajima_d', 'garud_h1', 'garud_h12', 'garud_h2_h1', 'n_columns']
+=======
+import os
+from math import isnan
+
+
+def all_statistics():
+    return ['ihs_maxabs', 'tajima_d', 'garud_h1', 'n_columns']
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 def all_image_and_position_statistics():
@@ -42,7 +51,11 @@ class SummaryStatPopGenModel(PopGenModel):
 
 
 def compute_threshold(statistics: np.ndarray,
+<<<<<<< HEAD
                       labels: np.ndarray) -> float:
+=======
+        labels: np.ndarray) -> float:
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     """Computes optimal decision threshold based on computed statistics from training dataset
 
     Parameters
@@ -148,10 +161,16 @@ class Statistic:
         for x, y in datagenerator.generator('train'):
             statistics += list(self.predict(x))
             labels += list(y)
+<<<<<<< HEAD
             # print(f'{len(statistics)} stats have been computed')
 
         self.threshold = compute_threshold(
             np.asarray(statistics), np.asarray(labels))
+=======
+            print(f'{len(statistics)} stats have been computed')
+
+        self.threshold = compute_threshold(np.asarray(statistics), np.asarray(labels))
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
     def predict(self, data: List[np.ndarray]) -> np.ndarray:
         stats = []
@@ -409,10 +428,15 @@ class StandardizedStatistic:
                     for j, count in enumerate(counts):
                         bins[count - 1].append(ihs[j])
             print(num)
+<<<<<<< HEAD
         means = np.nan_to_num(np.asarray(
             [np.nanmean(binn) for binn in bins], dtype=float))
         stds = np.nan_to_num(np.asarray(
             [np.nanstd(binn) for binn in bins], dtype=float), nan=1.0)
+=======
+        means = np.nan_to_num(np.asarray([np.nanmean(binn) for binn in bins], dtype=float))
+        stds = np.nan_to_num(np.asarray([np.nanstd(binn) for binn in bins], dtype=float), nan=1.0)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         self.set_means_stds(means, stds)
 
         print('Finding Threshold')
@@ -426,8 +450,12 @@ class StandardizedStatistic:
                 labels += list(y)
             print(f'{len(statistics)} stats have been computed')
 
+<<<<<<< HEAD
         self.threshold = compute_threshold(
             np.asarray(statistics), np.asarray(labels))
+=======
+        self.threshold = compute_threshold(np.asarray(statistics), np.asarray(labels))
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
     def predict(self, data: List[np.ndarray]) -> np.ndarray:
         stats = []

@@ -8,6 +8,7 @@ from matplotlib.colors import LogNorm
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = "3"
 
 
+
 def getGPU():
     """
     Grabs GPU. Sometimes Tensorflow attempts to use CPU when this is not called on my machine.
@@ -26,6 +27,7 @@ def getGPU():
     print(tf.config.list_physical_devices('GPU'))
 
 
+<<<<<<< HEAD
 def save_grey_image(image, filename: str, colorbar: bool = True, xticks=None, yticks=None, cmap='Greys_r', symmetric_range: bool = False, logscale: bool = False,
                     scale_vs: float = None):
     plt.clf()
@@ -47,9 +49,21 @@ def save_grey_image(image, filename: str, colorbar: bool = True, xticks=None, yt
         plt.imshow(image, cmap=cmap, vmin=vmin, vmax=vmax)
     if colorbar:
         plt.colorbar(fraction=0.046, pad=0.04)
+=======
+
+def save_grey_image(image, filename: str, colorbar: bool = True, xticks = None, yticks = None):
+    plt.clf()
+    plt.imshow(image, cmap='Greys_r')
+    if colorbar:
+        plt.colorbar()
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     if xticks is not None:
         plt.xticks(xticks)
     if yticks is not None:
         plt.yticks(yticks)
+<<<<<<< HEAD
 
     plt.savefig(filename)
+=======
+    plt.savefig(filename)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83

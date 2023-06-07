@@ -41,22 +41,35 @@ class SLiM(PopGenSimulator):
                     'SELCOEFF': str(float(self.config['SELCOEFF'])*2)}
         elif self.config['template'] == 'schaffner_model_sweep.slim':
             template = {'SELCOEFF': str(float(self.config['SELCOEFF'])*2),
+<<<<<<< HEAD
                         'NINDIV': self.config['NINDIV'],
                         'SWEEPPOP': self.config['SWEEPPOP']}
             pops = [1, 2, 3]
+=======
+                     'NINDIV': self.config['NINDIV'],
+                     'SWEEPPOP': self.config['SWEEPPOP']}
+            pops = [1,2,3]
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             pops.remove(template['SWEEPPOP'])
             template['NONFOCALPOP1'] = pops[0]
             template['NONFOCALPOP2'] = pops[1]
             assert len(pops) == 2
+<<<<<<< HEAD
             return template
         elif self.config['template'] == 'schaffner_model_neutral.slim':
             return {'NINDIV': self.config['NINDIV']}
         elif self.config['template'] == 'soft_sweep.slim':
             return {'NINDIV': self.config['NINDIV'], 'SELCOEFF': str(float(self.config['SELCOEFF'])*2), 'NMutatedIndivs': self.config['NMutatedIndivs']}
+=======
+            return  template
+        elif self.config['template'] == 'schaffner_model_neutral.slim':
+            return {'NINDIV': self.config['NINDIV']}
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         else:
             raise NotImplementedError
 
     def _msms_match_recapitate(self,
+<<<<<<< HEAD
                                rts,
                                alive_inds,
                                template_settings,
@@ -64,6 +77,14 @@ class SLiM(PopGenSimulator):
                                id_out_file):
         keep_indivs = np.random.choice(alive_inds, int(
             template_settings['NINDIV']), replace=False)
+=======
+                              rts,
+                              alive_inds,
+                              template_settings,
+                              id_num,
+                              id_out_file):
+        keep_indivs = np.random.choice(alive_inds, int(template_settings['NINDIV']), replace=False)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         keep_nodes = []
         for i in keep_indivs:
             keep_nodes.extend(rts.individual(i).nodes)
@@ -95,10 +116,16 @@ class SLiM(PopGenSimulator):
         pop_indivs = [[i for i in alive_inds if rts.individual(i).metadata['subpopulation'] == k]
                       for k in [1, 2, 3]]
 
+<<<<<<< HEAD
         # get vcf file for each population
         for k in [1, 2, 3]:
             keep_indivs = np.random.choice(
                 pop_indivs[k - 1], int(template_settings['NINDIV']), replace=False)
+=======
+         # get vcf file for each population
+        for k in [1, 2, 3]:
+            keep_indivs = np.random.choice(pop_indivs[k - 1], int(template_settings['NINDIV']), replace=False)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             keep_nodes = []
             for i in keep_indivs:
                 keep_nodes.extend(rts.individual(i).nodes)
@@ -126,23 +153,33 @@ class SLiM(PopGenSimulator):
         id_num: (int) - ID of current simulate
 
         """
+<<<<<<< HEAD
         # Get filenames
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         slim_tmp_save_file = f'{self.tmp_simulation_folder}/{id_num:09d}.txt'
         input_file = f'{self.tmp_simulation_folder}/{id_num:09d}.trees'
         id_out_file = f'{self.tmp_simulation_folder}/{id_num:09d}'
         np.random.seed(self.seeds[id_num - 1])
 
+<<<<<<< HEAD
         # Set seed and temporary save point
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         template_settings = self.template_settings.copy()
         template_settings['SEED'] = str(self.seeds[id_num-1])
         template_settings['SLIM_TMP_SAVE'] = f'\"{slim_tmp_save_file}\"'
 
+<<<<<<< HEAD
         # If schaffner sweep, output directly to data file, otherwise output tree
+=======
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         if 'schaffner_model_sweep.slim' == self.config['template']:
             template_settings['OUTPUT'] = f'\"{id_out_file}\"'
         else:
             template_settings['OUTPUT'] = f'\"{input_file}\"'
 
+<<<<<<< HEAD
         # Make slim template file and simulate.
         tmp_settings_file = self._make_template_settings_file(
             template_settings, id_num)
@@ -150,6 +187,11 @@ class SLiM(PopGenSimulator):
             f'{self.config["software"]} {tmp_settings_file} >/dev/null 2>&1')
 
         # If not schaffner sweep, then recapitate
+=======
+        tmp_settings_file = self._make_template_settings_file(template_settings, id_num)
+        os.system(f'{self.config["software"]} {tmp_settings_file} >/dev/null 2>&1')
+
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         if not 'schaffner_model_sweep.slim' == self.config['template']:
             orig_ts = tskit.load(input_file)  # name of trees file from slim
             # recapitate
@@ -157,6 +199,7 @@ class SLiM(PopGenSimulator):
                                     random_seed=self.seeds[id_num - 1])
             # simplify
             alive_inds = rts.individuals_alive_at(0)
+<<<<<<< HEAD
             if 'msms_match' in self.config['template'] or 'soft_sweep' in self.config['template']:
                 self._msms_match_recapitate(
                     rts, alive_inds, template_settings, id_num, id_out_file)
@@ -165,6 +208,13 @@ class SLiM(PopGenSimulator):
                     rts, alive_inds, template_settings, id_num, id_out_file)
 
         # Delete extra files and return
+=======
+            if 'msms_match' in self.config['template']:
+                self._msms_match_recapitate(rts, alive_inds, template_settings, id_num, id_out_file)
+            elif 'schaffner' in self.config['template']:
+                self._schaffner_recapitate(rts, alive_inds, template_settings, id_num, id_out_file)
+
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         os.remove(tmp_settings_file)
         if os.path.isfile(input_file):
             os.remove(input_file)
@@ -183,11 +233,18 @@ class SLiM(PopGenSimulator):
         -------
         [np.ndarray, np.ndarray]: Genetic image and the loci positions as np arrays
         """
+<<<<<<< HEAD
         if 'msms_match' in self.config['template'] or 'soft_sweep' in self.config['template']:
             files = [(id_out_file + '.vcf', 'popgen_image', 'popgen_positions')]
         elif 'schaffner' in self.config['template']:
             files = [(id_out_file + '_pop' + str(k) + '.vcf',
                       f'popgen_pop_image{k}', f'popgen_pop_positions{k}') for k in [1, 2, 3]]
+=======
+        if 'msms_match' in self.config['template']:
+            files = [(id_out_file + '.vcf', 'popgen_image', 'popgen_positions')]
+        elif 'schaffner' in self.config['template']:
+            files = [(id_out_file + '_pop' + str(k) + '.vcf', f'popgen_pop_image{k}', f'popgen_pop_positions{k}') for k in [1,2,3]]
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         else:
             raise NotImplementedError
 
@@ -306,6 +363,7 @@ if __name__ == '__main__':
                                                                        max_sub_processes=max_sub_processes)
                 simulator.run_simulations()
 
+<<<<<<< HEAD
     # settings = {
     #     'neutral': [
     #         {'software': 'msms',
@@ -424,6 +482,112 @@ if __name__ == '__main__':
          'NMutatedIndivs': 600,
          },
 
+=======
+
+    settings = {
+        'neutral': [
+            {'software': 'msms',
+             'NREF': '10000',
+             'N': 100,
+             'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+             'LEN': '80000',
+             'THETA': '48',
+             'RHO': '32',
+             'NCHROMS': '128',
+             'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+             'FREQ':'`bc <<< \'scale=6; 1/100\'`',
+             'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+             'SELCOEFF': '0',
+             },
+
+            {'software': 'slim',
+             'template': 'msms_match.slim',
+             'N': 10,
+             'NINDIV': '64'
+             }
+
+        ],
+        'sweep': [
+            {'software': 'msms',
+             'N': 100,
+             'NREF': '10000',
+             'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+             'LEN': '80000',
+             'THETA': '48',
+             'RHO': '32',
+             'NCHROMS': '128',
+             'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+             'FREQ': '`bc <<< \'scale=6; 1/100\'`',
+             'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+             'SELCOEFF': '0.01',
+             },
+
+            {'software': 'slim',
+             'template': 'msms_match_selection.slim',
+             'N': 10,
+             'NINDIV': '64',
+             'SELCOEFF': '0.01',
+             }
+        ]
+    }
+
+    configs = [
+
+        {'software': 'slim',
+         'template': 'schaffner_model_neutral.slim',
+         'N': 50000,
+         'NINDIV': '64'
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 50000,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 1,
+         },
+
+        # {'software': 'slim',
+        #  'template': 'schaffner_model_sweep.slim',
+        #  'N': 10000,
+        #  'NINDIV': '64',
+        #  'SELCOEFF': '0.005',
+        #  'SWEEPPOP': 1,
+        #  },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 50000,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 2,
+         },
+
+        # {'software': 'slim',
+        #  'template': 'schaffner_model_sweep.slim',
+        #  'N': 10000,
+        #  'NINDIV': '64',
+        #  'SELCOEFF': '0.005',
+        #  'SWEEPPOP': 2,
+        #  },
+
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 50000,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 3,
+         },
+
+        # {'software': 'slim',
+        #  'template': 'schaffner_model_sweep.slim',
+        #  'N': 10000,
+        #  'NINDIV': '64',
+        #  'SELCOEFF': '0.005',
+        #  'SWEEPPOP': 3,
+        #  },
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     ]
 
     # for config in configs:
@@ -434,4 +598,8 @@ if __name__ == '__main__':
         print(config)
         simulator = SLiM(config, parallel=True, max_sub_processes=5)
         simulator.run_simulations()
+<<<<<<< HEAD
     # simulate(settings, parallel=True, max_sub_processes=4)
+=======
+    # simulate(settings, parallel=True, max_sub_processes=4)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83

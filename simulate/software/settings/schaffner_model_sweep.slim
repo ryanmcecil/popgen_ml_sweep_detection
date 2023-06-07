@@ -94,9 +94,15 @@ fitness(m2, p{NONFOCALPOP2}){{return 1.0;}}
 // Generation 6020 is the present. Output and terminate.
 76020 late() {{
 	//sim.treeSeqOutput({OUTPUT});
+<<<<<<< HEAD
 	p1Individuals = sample(p1.individuals,{NINDIV});
 	p2Individuals = sample(p2.individuals,{NINDIV});
 	p3Individuals = sample(p3.individuals,{NINDIV});
+=======
+	p1Individuals = sample(p1.individuals,64);
+	p2Individuals = sample(p2.individuals,64);
+	p3Individuals = sample(p3.individuals,64);
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 	p1Individuals.genomes.outputVCF(paste0(c({OUTPUT},"_pop1.vcf")));
 	p2Individuals.genomes.outputVCF(paste0(c({OUTPUT},"_pop2.vcf")));
 	p3Individuals.genomes.outputVCF(paste0(c({OUTPUT},"_pop3.vcf")));

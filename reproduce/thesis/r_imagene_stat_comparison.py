@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import csv
 import os
 from copy import deepcopy
@@ -16,6 +17,20 @@ from reproduce.thesis.arch_analysis import (get_training_settings,
                                             imagene_model_config,
                                             imagene_sim_config)
 from util.util import getGPU
+=======
+from models.retrieve_model import retrieve_model
+from models.popgen_summary_statistics import all_statistics, all_image_and_position_statistics
+from arch_analysis import imagene_conversion_config, imagene_sim_config, get_training_settings, imagene_model_config
+from typing import Dict
+import csv
+from visualize_r_imagene import r_imagene_model_config
+from util.util import getGPU
+import pandas as pd
+from matplotlib import pyplot as plt
+import seaborn as sns
+import os
+from copy import deepcopy
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 def stat_model_config(name: str) -> Dict:
@@ -51,7 +66,11 @@ def stat_training_settings() -> Dict:
 
 def raw_conversion_config():
     conversion_config = [{'conversion_type': 'raw_data',
+<<<<<<< HEAD
                           'datatype': 'popgen_pop_image1',
+=======
+                          'datatype': 'popgen_image',
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                           }]
     return conversion_config
 
@@ -82,8 +101,13 @@ def stat_comparison_plot_accs_and_corr_matrix(model_configs,
         print(f'Testing {model_names[i]}')
         model = retrieve_model(config)(config.copy())
         data_predictions[model_names[i]], data_acc[model_names[i]] = model.test(prediction_values=True,
+<<<<<<< HEAD
                                                                                 accuracy_value=True,
                                                                                 test_in_batches=True)
+=======
+                                                accuracy_value=True,
+                                                test_in_batches=True)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
     # Test each statistic on same processed data and on raw data
     # for stat_conv_config, conv_config_name in \
@@ -114,8 +138,13 @@ def stat_comparison_plot_accs_and_corr_matrix(model_configs,
                     print(stat)
                     raise NotImplementedError
                 data_predicts[stat_name], data_accs[stat_name] = stat_model.test(prediction_values=True,
+<<<<<<< HEAD
                                                                                  accuracy_value=True,
                                                                                  test_in_batches=True)
+=======
+                                                accuracy_value=True,
+                                                test_in_batches=True)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
         base_filename = os.path.join(base_dir, f'stat_conv_{conv_config_name}')
         print('Plotting')
@@ -133,8 +162,12 @@ def stat_comparison_plot_accs_and_corr_matrix(model_configs,
                     cmap=plt.get_cmap('Blues'), cbar=False, ax=ax)
         ax.set_yticklabels(ax.get_yticklabels(), rotation="horizontal")
         plt.title('Correlation Matrix')
+<<<<<<< HEAD
         plt.savefig(f'{base_filename}_corr_matrix.png',
                     bbox_inches='tight', pad_inches=0.0)
+=======
+        plt.savefig(f'{base_filename}_corr_matrix.png', bbox_inches='tight', pad_inches=0.0)
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 if __name__ == '__main__':
@@ -157,6 +190,13 @@ if __name__ == '__main__':
     }
     stat_comparison_plot_accs_and_corr_matrix([imagene_config, r_imagene_config],
                                               ['Imagene', 'R-Imagene'],
+<<<<<<< HEAD
                                               'reproduce/thesis2/results/imagene_stat_comparison',
                                               imagene_sim_config('0.01'),
                                               imagene_conversion_config())
+=======
+                                              'reproduce/thesis/results/imagene_stat_comparison',
+                                              imagene_sim_config('0.01'),
+                                              imagene_conversion_config())
+
+>>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
