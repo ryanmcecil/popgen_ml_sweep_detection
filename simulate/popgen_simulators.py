@@ -172,7 +172,7 @@ class SLiM(PopGenSimulator):
             os.remove(slim_tmp_save_file)
         return id_out_file
 
-    def _load_and_save_sim_data(self, id_out_file: str, id_num: int) -> [np.ndarray, np.ndarray]:
+    def _load_and_save_sim_data(self, id_out_file: str, id_num: int):
         """Loads the simulate data from given file and returns the image and positions as np array
 
         Parameters
