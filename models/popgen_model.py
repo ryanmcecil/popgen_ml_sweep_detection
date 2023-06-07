@@ -5,17 +5,12 @@ from typing import Dict, List
 
 import numpy as np
 import tensorflow as tf
-<<<<<<< HEAD
 from sklearn.metrics import ConfusionMatrixDisplay
 from tensorflow.keras.callbacks import CSVLogger, EarlyStopping
 from tensorflow.keras.optimizers import Adam
 
 from generator.data_generator import DataGenerator
 from util.popgen_data_class import PopGenDataClass
-=======
-import csv
-from math import isnan
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 
 
 class PopGenModel(ABC, PopGenDataClass):
@@ -35,11 +30,7 @@ class PopGenModel(ABC, PopGenDataClass):
         train_model: (bool) - If True, model will be trained.
         """
         super().__init__(config=config, root_dir=root_dir)
-<<<<<<< HEAD
         print(self.data_dir)
-=======
-        #print(self.data_dir)
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         self.config = config.copy()
         self.train_model = train_model
         self.model = self._load_model()
@@ -57,11 +48,7 @@ class PopGenModel(ABC, PopGenDataClass):
         raise NotImplementedError
 
     @abstractmethod
-<<<<<<< HEAD
     def _load(self, load_from_file=True):
-=======
-    def _load(self, load_from_file = True):
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         """Loads the model"""
         raise NotImplementedError
 
@@ -85,7 +72,6 @@ class PopGenModel(ABC, PopGenDataClass):
             for i, acc in enumerate(accs):
                 writer.writerow([i+1, acc])
 
-<<<<<<< HEAD
     def reinitalize_ml_model(self):
         tf.keras.backend.clear_session()
         model, _ = self._load(load_from_file=False)
@@ -93,8 +79,6 @@ class PopGenModel(ABC, PopGenDataClass):
                       loss='binary_crossentropy', metrics=['accuracy'])
         return model
 
-=======
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     def train(self, model):
         """Trains the model, saves it, and then returns it
 
@@ -103,21 +87,14 @@ class PopGenModel(ABC, PopGenDataClass):
         model: Either an ML model or a statistic model
         """
 
-<<<<<<< HEAD
         # Check settings if ML; if so, train using tensorflow
         data_generator = DataGenerator(self.config, load_training_data=True)
         if self.config['model']['type'] != 'statistic':
 
-=======
-        # Check settings if ML
-        data_generator = DataGenerator(self.config, load_training_data=True)
-        if self.config['model']['type'] != 'statistic':
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             val_x, val_y = data_generator.get_validation_data()
             num_trainings = 1
             if 'best_of' in self.config['train']['training']:
                 num_trainings = self.config['train']['training']['best_of']
-<<<<<<< HEAD
                 print(
                     f'Training the model {num_trainings} times and using the best validation accuracy')
             best_acc = 0
@@ -157,22 +134,6 @@ class PopGenModel(ABC, PopGenDataClass):
                               verbose=1, callbacks=[csv_logger])
 
                 # Compute validation accuracy and take best model
-=======
-                print(f'Training the model {num_trainings} times and using the best validation accuracy')
-
-            # Train the model
-            best_acc = 0
-            accs = []
-            for i in range(num_trainings):
-                tf.keras.backend.clear_session()
-                model, _ = self._load(load_from_file=False)
-                loss_file = os.path.join(self.base_dir, 'loss_log.csv')
-                csv_logger = CSVLogger(loss_file, append=True, separator=',')
-                model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
-                history = model.fit(data_generator, epochs=1, initial_epoch=0, verbose=1, callbacks=[csv_logger])
-                model.fit(data_generator, epochs=self.config['train']['training']['epochs'], initial_epoch=1,
-                          verbose=1, callbacks=[csv_logger])
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
                 _, validation_acc = model.evaluate(val_x, val_y)
                 accs.append(validation_acc)
                 if validation_acc > best_acc:
@@ -181,7 +142,6 @@ class PopGenModel(ABC, PopGenDataClass):
             self.write_val_accs_to_file(accs)
             tf.keras.backend.clear_session()
             model, _ = self._load()
-<<<<<<< HEAD
 
         else:  # call simple model fit if not an ML model
             model.fit(data_generator)

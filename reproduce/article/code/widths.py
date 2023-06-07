@@ -1,8 +1,5 @@
 from typing import Dict
-<<<<<<< HEAD
 
-=======
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
 from simulate.popgen_simulators import retrieve_simulator
 
 
@@ -26,11 +23,7 @@ def retrieve_image_width_from_settings(settings: Dict):
         raise NotImplementedError
 
 
-<<<<<<< HEAD
 def retrieve_max_width_from_settings(settings: Dict, use_min: bool = False):
-=======
-def retrieve_max_width_from_settings(settings: Dict):
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     """Retrieves maximum width across all simulated types
 
     Parameters
@@ -52,7 +45,6 @@ def retrieve_max_width_from_settings(settings: Dict):
     widths = []
     for label in 'sweep', 'neutral':
         config = settings['simulations'][label][0]
-<<<<<<< HEAD
         if use_min:
             widths.append(retrieve_simulator(config['software'])(
                 config).retrieve_max_or_min_width(pop=pop, get_max=False))
@@ -64,8 +56,3 @@ def retrieve_max_width_from_settings(settings: Dict):
         return min(widths)
     else:
         return max(widths)
-=======
-        widths.append(retrieve_simulator(config['software'])(config).retrieve_max_width(pop=pop))
-    print(widths)
-    return max(widths)
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
