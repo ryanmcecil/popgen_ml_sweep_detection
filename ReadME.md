@@ -55,10 +55,14 @@ The code to reproduce the results of the above works may be found in the `reprod
 
 ## Tools
 
-- Simulation of demographic models
-- Processing of simulated demographic models
-- Training of CNN models
-- IMplementation of common summary statistics
+- Simulation of demographic models using [MSMS](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2916717/) and [SLiM](https://messerlab.org/slim/).
+  - The code for doing so is in the `simulate` directory. An example for generating MSMS simulations can be found at the bottom of `simulate/popgen_simulators.py`.
+- Pre-processing simulations
+  - Contained in the `process` directory. Some of the different conversions implemented in `process/popgen_processors.py` are Imagene resizing and row sorting, zero padding, and trimming.
+- Implementing and training of StatML models on processed data
+  - The training and model code is in `models`. 
+    - `models/popgen_mlmodels.py` contains the machine learning models.
+    - `models/popgen_summary_statistics.py` contains implementations for common summary statistics.
 
 ## Acknowledgements
 

@@ -306,131 +306,19 @@ if __name__ == '__main__':
                                                                        max_sub_processes=max_sub_processes)
                 simulator.run_simulations()
 
-    # settings = {
-    #     'neutral': [
-    #         {'software': 'msms',
-    #          'NREF': '10000',
-    #          'N': 100,
-    #          'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-    #          'LEN': '80000',
-    #          'THETA': '48',
-    #          'RHO': '32',
-    #          'NCHROMS': '128',
-    #          'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-    #          'FREQ':'`bc <<< \'scale=6; 1/100\'`',
-    #          'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-    #          'SELCOEFF': '0',
-    #          },
+    msms_config = {'software': 'msms',
+                   'NREF': '10000',
+                   'N': 100,
+                   'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+                   'LEN': '80000',
+                   'THETA': '48',
+                   'RHO': '32',
+                   'NCHROMS': '128',
+                   'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+                   'FREQ': '`bc <<< \'scale=6; 1/100\'`',
+                   'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+                   'SELCOEFF': '0',
+                   }
 
-    #         {'software': 'slim',
-    #          'template': 'msms_match.slim',
-    #          'N': 10,
-    #          'NINDIV': '64'
-    #          }
-
-    #     ],
-    #     'sweep': [
-    #         {'software': 'msms',
-    #          'N': 100,
-    #          'NREF': '10000',
-    #          'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-    #          'LEN': '80000',
-    #          'THETA': '48',
-    #          'RHO': '32',
-    #          'NCHROMS': '128',
-    #          'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-    #          'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-    #          'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-    #          'SELCOEFF': '0.01',
-    #          },
-
-    #         {'software': 'slim',
-    #          'template': 'msms_match_selection.slim',
-    #          'N': 10,
-    #          'NINDIV': '64',
-    #          'SELCOEFF': '0.01',
-    #          }
-    #     ]
-    # }
-
-    # configs = {
-    #     'neutral': [
-    #         {'software': 'msms',
-    #          'NREF': '10000',
-    #          'N': 50000,
-    #          'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-    #          'LEN': '80000',
-    #          'THETA': '48',
-    #          'RHO': '32',
-    #          'NCHROMS': '1000',
-    #          'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-    #          'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-    #          'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-    #          'SELCOEFF': '0',
-    #          },
-    #     ],
-    #     'sweep': [
-    #         {'software': 'msms',
-    #          'N': 50000,
-    #          'NREF': '10000',
-    #          'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-    #          'LEN': '80000',
-    #          'THETA': '48',
-    #          'RHO': '32',
-    #          'NCHROMS': '1000',
-    #          'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-    #          'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-    #          'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-    #          'SELCOEFF': '0.01',
-    #          },
-    #     ]
-    # }
-
-    # configs = [
-
-    #     {'software': 'slim',
-    #      'template': 'schaffner_model_sweep.slim',
-    #      'N': 50000,
-    #      'NINDIV': '64',
-    #      'SELCOEFF': '0.005',
-    #      'SWEEPPOP': 1,
-    #      },
-
-    #     {'software': 'slim',
-    #      'template': 'schaffner_model_sweep.slim',
-    #      'N': 50000,
-    #      'NINDIV': '64',
-    #      'SELCOEFF': '0.005',
-    #      'SWEEPPOP': 2,
-    #      },
-
-    #     {'software': 'slim',
-    #      'template': 'schaffner_model_sweep.slim',
-    #      'N': 50000,
-    #      'NINDIV': '64',
-    #      'SELCOEFF': '0.005',
-    #      'SWEEPPOP': 3,
-    #      },
-
-    # ]
-
-    configs = [
-
-        {'software': 'slim',
-         'template': 'soft_sweep.slim',
-         'N': 20000,
-         'NINDIV': '64',
-         'SELCOEFF': '0.01',
-         'NMutatedIndivs': 600,
-         },
-
-    ]
-
-    # for config in configs:
-    #     simulator = SLiM(config, parallel=False)
-    #     simulator.test_simulations()
-
-    for config in configs:
-        print(config)
-        simulator = SLiM(config, parallel=True, max_sub_processes=5)
-        simulator.run_simulations()
+    simulator = SLiM(msms_config, parallel=True, max_sub_processes=5)
+    simulator.run_simulations()
