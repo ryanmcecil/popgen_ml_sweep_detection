@@ -1,7 +1,10 @@
-from util.util import getGPU
-from reproduce.imagene.slim.tiny_imagene_results import get_training_settings, imagene_conversion_config, imagene_sim_config, tiny_imagene_model_config
-from models.retrieve_model import retrieve_model
 import os
+
+from models.retrieve_model import retrieve_model
+from reproduce.imagene_results.slim.tiny_imagene_results import (
+    get_training_settings, imagene_conversion_config, imagene_sim_config,
+    tiny_imagene_model_config)
+from util.util import getGPU
 
 if __name__ == '__main__':
     getGPU()
@@ -16,7 +19,7 @@ if __name__ == '__main__':
     }
 
     imagene = retrieve_model(config)(config)
-    imagene.visualize_layer_outputs('reproduce/imagene/slim/results/tiny_imagene_row_sorting', 1)
-    imagene.visualize_parameters(os.path.join(os.getcwd(), 'reproduce/imagene/slim/results/tiny_imagene_row_sorting'))
-
-
+    imagene.visualize_layer_outputs(
+        'reproduce/imagene/slim/results/tiny_imagene_row_sorting', 1)
+    imagene.visualize_parameters(os.path.join(
+        os.getcwd(), 'reproduce/imagene/slim/results/tiny_imagene_row_sorting'))

@@ -1,7 +1,10 @@
-from typing import Dict
-from util.util import getGPU
 import os
-from reproduce.imagene.msms.imagene_results import imagene_conversion_config, imagene_model_config, train_test_sortings, get_training_settings
+from typing import Dict
+
+from reproduce.imagene_results.msms.imagene_results import (
+    get_training_settings, imagene_conversion_config, imagene_model_config,
+    train_test_sortings)
+from util.util import getGPU
 
 
 def imagene_sim_config(selection_coeff: str) -> Dict:

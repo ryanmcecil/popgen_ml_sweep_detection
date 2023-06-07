@@ -1,8 +1,11 @@
-from util.util import getGPU
 import os
-from reproduce.imagene.slim.imagene_results import imagene_sim_config, imagene_conversion_config, train_test_sortings, \
-    get_training_settings
-from reproduce.imagene.msms.tiny_imagene_results import tiny_imagene_model_config
+
+from reproduce.imagene_results.msms.tiny_imagene_results import \
+    tiny_imagene_model_config
+from reproduce.imagene_results.slim.imagene_results import (
+    get_training_settings, imagene_conversion_config, imagene_sim_config,
+    train_test_sortings)
+from util.util import getGPU
 
 if __name__ == '__main__':
     getGPU()
