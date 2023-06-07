@@ -184,9 +184,6 @@ class PopGenModel(ABC, PopGenDataClass):
 <<<<<<< HEAD
 
         else:  # call simple model fit if not an ML model
-=======
-        else:
->>>>>>> 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             model.fit(data_generator)
             model.save(os.path.join(self.data_dir, 'model'))
         return model

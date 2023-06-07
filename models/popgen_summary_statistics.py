@@ -428,7 +428,6 @@ class StandardizedStatistic:
                     for j, count in enumerate(counts):
                         bins[count - 1].append(ihs[j])
             print(num)
-<<<<<<< HEAD
         means = np.nan_to_num(np.asarray(
             [np.nanmean(binn) for binn in bins], dtype=float))
         stds = np.nan_to_num(np.asarray(

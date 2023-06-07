@@ -21,7 +21,6 @@ from tensorflow.keras.layers import (Activation, Attention, Conv2D, Dense,
 from tensorflow.keras.models import load_model
 
 from generator.data_generator import DataGenerator
-<<<<<<< HEAD
 from models.popgen_model import PopGenModel
 from util.util import save_grey_image
 =======
