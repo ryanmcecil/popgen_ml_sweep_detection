@@ -79,7 +79,9 @@ def imagene_model_config() -> Dict:
     model_config = {
         'type': 'ml',
         'name': 'imagene',
+        'convolution': True,
         'max_pooling': True,
+        'relu': True,
         'filters': 32,
         'depth': 3,
         'kernel_size': 3,

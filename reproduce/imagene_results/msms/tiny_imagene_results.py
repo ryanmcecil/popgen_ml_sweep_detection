@@ -1,8 +1,10 @@
-from typing import Dict
-from util.util import getGPU
 import os
-from reproduce.imagene.msms.imagene_results import imagene_sim_config, imagene_conversion_config, train_test_sortings, \
-    get_training_settings
+from typing import Dict
+
+from reproduce.imagene_results.msms.imagene_results import (
+    get_training_settings, imagene_conversion_config, imagene_sim_config,
+    train_test_sortings)
+from util.util import getGPU
 
 
 def tiny_imagene_model_config() -> Dict:
@@ -15,10 +17,13 @@ def tiny_imagene_model_config() -> Dict:
     model_config = {
         'type': 'ml',
         'name': 'imagene',
+        'convolution': True,
         'max_pooling': True,
+        'relu': True,
         'filters': 1,
         'depth': 1,
-        'kernel_size': 3,
+        'kernel_height': 3,
+        'kernel_width': 3,
         'num_dense_layers': 0
     }
     return model_config

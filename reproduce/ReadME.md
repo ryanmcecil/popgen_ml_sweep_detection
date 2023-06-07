@@ -1,24 +1,13 @@
-## Reproducing Results
+# Reproducing Results
 
-Each directory contains the py files necessary to reproduce appropriate results.
+Each directory contains the py files necessary to generate the raw csv and plot data used for different projects. To reproduce all results, call
 
-### Imagene
+```
+bash reproduce.sh
+```
 
-#### MSMS
-1. Reproduction of full Imagene model performance with selection coefficient of 0.01. 
-Performance depicted by generated confusion matrices.
-2. Reproduction of 'Tiny' Imagene model performance with selection coefficient of 0.01. 
-Performance depicted by generated confusion matrices. Visualization of layer weights learned and layer outputs for
-each model.
-3. Reproduction of summary statistic performance on selection coefficient of 0.01. Comparison of summary statistic
-performance to 'tiny' Imagene model
+The following directories are used for
 
-#### SLiM
-1. Reproduction of full Imagene model performance with selection coefficient of 0.01. 
-Performance depicted by generated confusion matrices.
-2. Reproduction of 'Tiny' Imagene model performance with selection coefficient of 0.01. 
-Performance depicted by generated confusion matrices. Visualization of layer weights learned and layer outputs for
-each model.
-3. Reproduction of summary statistic performance on selection coefficient of 0.01. Comparison of summary statistic
-performance to 'tiny' Imagene model
-
+- *article*: Reproduce the results from our recent [preprint](https://www.biorxiv.org/content/10.1101/2023.02.26.530156v1).
+- *imagene_results*: Reproduce results from the [Imagene](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2927-x) paper with both [MSMS](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2916717/) and [SLiM](https://messerlab.org/slim/).
+- *thesis*: Reproduce results from the population genetics portion of my master's thesis.

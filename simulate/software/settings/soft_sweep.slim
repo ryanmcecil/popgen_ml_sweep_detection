@@ -1,0 +1,82 @@
+// set up a simple neutral simulation
+initialize() {{
+	initializeTreeSeq(simplificationInterval=1000);
+
+	defineConstant("SEED", {SEED}); 
+	
+	setSeed(SEED); //SEED is input
+	
+	initializeMutationRate(0.0);
+	//initializeMutationRate(1.5e-8);
+	
+	// m1 mutation type: neutral
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	
+	// m2 mutation type: adaptive
+	initializeMutationType("m2", 0.5, "f", {SELCOEFF});
+	
+	// g1 genomic element type: uses m1 for all mutations
+	initializeGenomicElementType("g1", m1, 1.0);
+	
+	// uniform chromosome of length 80 kb with uniform recombination
+	initializeGenomicElement(g1, 1, 80000);
+	initializeRecombinationRate(1e-8);
+}}
+
+// create ancestral population of 10,000 individuals and burnin for 100 gen
+1 {{
+	sim.addSubpop("p1", 10000);
+}}
+
+100{{
+	//decrease population to 2,000
+	p1.setSubpopulationSize(2000);
+}}
+
+600{{
+	//increase population to 20,000
+	p1.setSubpopulationSize(20000);
+}}
+
+
+
+3000 late(){{
+	//selection
+	//save state of simulation in case allele does not establish
+	sim.outputFull({SLIM_TMP_SAVE}); //CAN ALTER THIS PATH  
+	//sim.outputFull("slim_tmp.txt"); //
+	target = sample(p1.genomes, {NMutatedIndivs}); //initial frequency is 0.02 (**MAYBE VARY FROM 400-600?** for hard sweeps, used 200)
+	target.addNewDrawnMutation(m2, 40000); //introduce adaptive mutation to all 400 haplotypes at pos 40000
+	
+	
+}}
+3000: late(){{
+	mut = sim.mutationsOfType(m2);
+	if (size(mut)==1){{
+		if (sim.mutationFrequencies(NULL, mut)>0.1){{
+			//cat(getSeed()+": ESTABLISHED -- CONVERTING TO BENEFICIAL\n");
+			cat(getSeed()+": ESTABLISHED");
+			sim.deregisterScriptBlock(self);	
+		}}
+			
+	}}
+	else{{
+		cat(getSeed()+": LOST BEFORE ESTABLISHMENT -- RESTARTING\n");
+		//go back to generation 3000
+		sim.readFromPopulationFile({SLIM_TMP_SAVE}); 
+		//sim.readFromPopulationFile("slim_tmp.txt");
+		setSeed(getSeed()+2);
+		target = sample(p1.genomes, {NMutatedIndivs});
+		target.addNewDrawnMutation(m2, 40000);
+		
+			
+	}}
+}}
+
+3600{{
+	//sample at present day
+	//p1Individuals = sample(p1.individuals, NINDIV); //NINDIV=64 for 128 haplotypes
+	//p1Individuals.genosmes.outputMS(OUTPUT); //OUTPUT
+	sim.treeSeqOutput({OUTPUT}); //OUTPUT is .trees 
+	//sim.treeSeqOutput("slim_output.trees");
+}}

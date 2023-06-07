@@ -52,16 +52,16 @@ initialize() {{
 	mut = sim.mutationsOfType(m2);
 	if (size(mut)==1){{
 		if (sim.mutationFrequencies(NULL, mut)>0.1){{
-			cat(SEED+": ESTABLISHED\n");
+			cat(getSeed()+": ESTABLISHED\n");
 			sim.deregisterScriptBlock(self);	
 		}}
 			
 	}}
 	else{{
-		cat(SEED+": LOST -- RESTARTING\n");
+		cat(getSeed()+": LOST -- RESTARTING\n");
 		//go back to generation 3000
 		sim.readFromPopulationFile({SLIM_TMP_SAVE});
-		setSeed(SEED+2);
+		setSeed(getSeed()+2);
 		target = sample(p1.genomes, 200);
 		target.addNewDrawnMutation(m2, 40000);
 		

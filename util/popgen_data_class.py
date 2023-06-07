@@ -1,9 +1,10 @@
-from typing import Dict, List
 import os
-import yaml
+from typing import Dict, List
+
 import numpy as np
-from scipy import sparse
+import yaml
 from PIL import Image
+from scipy import sparse
 
 
 class PopGenDataClass:
@@ -25,7 +26,7 @@ class PopGenDataClass:
         """
         # Set config
         if config is not None:
-            self.config = config
+            self.config = config.copy()
 
             if root_dir is not None:
                 self.root_dir = root_dir
@@ -33,7 +34,8 @@ class PopGenDataClass:
                     os.mkdir(self.root_dir)
 
                 if init_base_dir:
-                    self.base_dir = self._find_or_make_base_directory(self.root_dir)
+                    self.base_dir = self._find_or_make_base_directory(
+                        self.root_dir)
                     if init_data_dir:
                         self.data_dir = os.path.join(self.base_dir, 'data')
                         if not os.path.isdir(self.data_dir):
@@ -148,10 +150,17 @@ class PopGenDataClass:
             directory = self.root_dir
         for base_dir in os.listdir(directory):
             if base_dir != 'config.yaml':
-                config = self._read_config_from_yaml_file(os.path.join(directory, base_dir))
+                config = self._read_config_from_yaml_file(
+                    os.path.join(directory, base_dir))
                 if self._config_is_equal(config):
                     return os.path.join(directory, base_dir)
-        base_dir = f'{directory}/{self._base_dir_surname()}_{len(os.listdir(directory)):04d}'
+        base_dir = None
+        for i in range(len(os.listdir(directory))):
+            if not os.path.isdir(f'{directory}/{self._base_dir_surname()}_{i:04d}'):
+                base_dir = f'{directory}/{self._base_dir_surname()}_{i:04d}'
+                break
+        if base_dir is None:
+            base_dir = f'{directory}/{self._base_dir_surname()}_{len(os.listdir(directory)):04d}'
         os.mkdir(base_dir)
         self._write_config_to_yaml_file(base_dir)
         return base_dir
@@ -175,6 +184,10 @@ class PopGenDataClass:
             return f'popgen_image_{id_num:09d}.npz'
         elif datatype == 'popgen_positions':
             return f'popgen_positions_{id_num:09d}.npy'
+        elif datatype[:-1] == 'popgen_pop_image':
+            return f'popgen_pop{datatype[-1]}_image_{id_num:09d}.npz'
+        elif datatype[:-1] == 'popgen_pop_positions':
+            return f'popgen_pop{datatype[-1]}_positions_{id_num:09d}.npy'
         else:
             raise NotImplementedError
 
@@ -200,6 +213,11 @@ class PopGenDataClass:
                 raise NotImplementedError
         elif 'popgen_positions' in file:
             return 'popgen_positions'
+        elif 'popgen_pop' in file:
+            if 'image' in file:
+                return f'popgen_pop_image{file[10]}'
+            elif 'positions' in file:
+                return f'popgen_pop_positions{file[10]}'
         else:
             raise NotImplementedError
 
@@ -219,13 +237,13 @@ class PopGenDataClass:
 
         """
         datatype = self._data_type_from_filename(file_path)
-        if datatype == 'popgen_image':
+        if 'image' in datatype:
             image = sparse.load_npz(file_path)
             if as_tensor:
                 return image.toarray()[np.newaxis, :, :, np.newaxis]
             else:
                 return image.toarray()
-        elif datatype == 'popgen_positions':
+        elif 'positions' in datatype:
             positions = np.load(file_path)
             if as_tensor:
                 return positions[np.newaxis, :]
@@ -263,7 +281,8 @@ class PopGenDataClass:
         if full_file_path is None:
             if file is None:
                 if id is not None and datatype is not None:
-                    file = self._retrieve_file_from_id_and_datatype(id_num, datatype)
+                    file = self._retrieve_file_from_id_and_datatype(
+                        id_num, datatype)
                 else:
                     raise Exception
             if directory is not None:
@@ -290,20 +309,20 @@ class PopGenDataClass:
         if directory is None:
             directory = self.data_dir
         full_file_path = os.path.join(directory, file)
-        if datatype == 'popgen_image':
+        if 'image' in datatype:
             sparse_matrix = sparse.csr_matrix(data)
             sparse.save_npz(full_file_path, sparse_matrix, compressed=True)
-        elif datatype == 'popgen_positions':
+        elif 'positions' in datatype:
             np.save(full_file_path, data)
         else:
             raise NotImplementedError
 
     def data_exists(self,
-                  full_file_path: str = None,
-                  file: str = None,
-                  id_num: int = None,
-                  datatype: str = None,
-                  directory: str = None) -> bool:
+                    full_file_path: str = None,
+                    file: str = None,
+                    id_num: int = None,
+                    datatype: str = None,
+                    directory: str = None) -> bool:
         """Checks if data exists
 
         Parameters
@@ -325,7 +344,8 @@ class PopGenDataClass:
         if full_file_path is None:
             if file is None:
                 if id is not None and datatype is not None:
-                    file = self._retrieve_file_from_id_and_datatype(id_num, datatype)
+                    file = self._retrieve_file_from_id_and_datatype(
+                        id_num, datatype)
                 else:
                     raise Exception
             if directory is not None:
@@ -377,7 +397,8 @@ class PopGenDataClass:
             directory = self.data_dir
         filenames = []
         for i in range(n):
-            filenames.append(os.path.join(directory, self._retrieve_file_from_id_and_datatype(i+1, datatype)))
+            filenames.append(os.path.join(
+                directory, self._retrieve_file_from_id_and_datatype(i+1, datatype)))
         return filenames
 
     def plot_example_image(self,

@@ -1,9 +1,11 @@
-from typing import Dict
-import skimage.transform
+import os
+from typing import Dict, List
+
 import numpy as np
+import skimage.transform
+
 from process.popgen_processor import PopGenProcessor
 from simulate.popgen_simulator import PopGenSimulator
-from typing import List
 
 
 def retrieve_processor(name: str):
@@ -16,8 +18,12 @@ def retrieve_processor(name: str):
     """
     if name == 'imagene':
         return ImaGeneProcessor
+    elif name == 'zero_padding_imagene':
+        return ZeroPaddingImaGeneProcessor
     elif name == 'raw_data':
         return RawPopGenData
+    elif name == 'paring_imagene':
+        return ParingImaGeneProcessor
     else:
         raise NotImplementedError
 
@@ -30,7 +36,10 @@ class ImaGeneProcessor(PopGenProcessor):
             raise ValueError
 
     def conversion_datatype(self) -> str:
-        return 'popgen_image'
+        if 'pop' in self.config:
+            return f'popgen_pop_image{self.config["pop"]}'
+        else:
+            return 'popgen_image'
 
     def _sort(self, data: np.ndarray, ordering: str) -> np.ndarray:
         """Imagene type sorting modifed from https://github.com/mfumagalli/ImaGene/blob/master/ImaGene.py
@@ -62,7 +71,8 @@ class ImaGeneProcessor(PopGenProcessor):
         elif ordering == 'rows_dist':
             uniques, counts = np.unique(data, return_counts=True, axis=0)
             # most frequent row in float
-            top = uniques[counts.argsort()[::-1][0]].transpose().astype('float32')
+            top = uniques[counts.argsort()[::-1][0]
+                          ].transpose().astype('float32')
             # distances from most frequent row
             distances = np.mean(np.abs(uniques[:, :, 0] - top), axis=1)
             # fill in from top to bottom
@@ -116,7 +126,8 @@ class ImaGeneProcessor(PopGenProcessor):
         np.ndarray: Filtered data
 
         """
-        idx = np.where(np.mean(data, axis=0) >= self.config['min_minor_allele_freq'])[0]
+        idx = np.where(np.mean(data, axis=0) >=
+                       self.config['min_minor_allele_freq'])[0]
         data = data[:, idx]
         return data
 
@@ -132,8 +143,10 @@ class ImaGeneProcessor(PopGenProcessor):
         np.ndarray: resized data
 
         """
-        dimensions = (self.config['resize_dimensions'], self.config['resize_dimensions'])
-        data = skimage.transform.resize(data, dimensions, anti_aliasing=True, mode='reflect')
+        dimensions = (self.config['resize_dimensions'],
+                      self.config['resize_dimensions'])
+        data = skimage.transform.resize(data.astype(
+            np.float32), dimensions, anti_aliasing=True, mode='reflect')
         data = np.where(data < 0.5, 0, 1)
         return data
 
@@ -145,7 +158,7 @@ class ImaGeneProcessor(PopGenProcessor):
         if self.config['sorting'] == 'Rows' or self.config['sorting'] == 'RowsCols':
             data = self._sort(data, 'rows_freq')
 
-        if self.config['sorting']== 'Cols' or self.config['sorting'] == 'RowsCols':
+        if self.config['sorting'] == 'Cols' or self.config['sorting'] == 'RowsCols':
             data = self._sort(data, 'cols_freq')
 
         if self.config['sorting'] != 'None' and self.config['sorting'] != 'Cols' \
@@ -153,6 +166,67 @@ class ImaGeneProcessor(PopGenProcessor):
             raise Exception('A valid sorting option was not specified')
 
         data = self._resize(data)
+
+        return data
+
+
+class ZeroPaddingImaGeneProcessor(ImaGeneProcessor):
+
+    def _resize(self, data: np.ndarray):
+        """Resize all images to same width using zero padding
+
+        Parameters
+        ----------
+        data: (np.ndarray) - data to be resized
+
+        Returns
+        -------
+        np.ndarray: resized data
+
+        """
+        assert self.config['resize_dimensions'] >= data.shape[1]
+        width = data.shape[1]
+        diff = self.config['resize_dimensions'] - width
+        pad1 = diff // 2
+        pad2 = self.config['resize_dimensions'] - width - pad1
+        data = np.pad(data, ((0, 0), (pad1, pad2)), 'constant')
+        return data
+
+
+class ParingImaGeneProcessor(ImaGeneProcessor):
+
+    def _resize(self, data: np.ndarray):
+        """Resize all images to same width by paring down images to minimum width
+
+        Parameters
+        ----------
+        data: (np.ndarray) - data to be resized
+
+        Returns
+        -------
+        np.ndarray: resized data
+
+        """
+        assert self.config['resize_dimensions'] <= data.shape[1]
+        width = data.shape[1]
+        diff = int((width - self.config['resize_dimensions'])/2)
+        return data[:, diff:diff+self.config['resize_dimensions']]
+
+    def _convert(self, data: np.ndarray) -> np.ndarray:
+
+        data = self._majorminor(data)
+
+        data = self._resize(data)
+
+        if self.config['sorting'] == 'Rows' or self.config['sorting'] == 'RowsCols':
+            data = self._sort(data, 'rows_freq')
+
+        if self.config['sorting'] == 'Cols' or self.config['sorting'] == 'RowsCols':
+            data = self._sort(data, 'cols_freq')
+
+        if self.config['sorting'] != 'None' and self.config['sorting'] != 'Cols' \
+                and self.config['sorting'] != 'Rows' and self.config['sorting'] != 'RowsCols':
+            raise Exception('A valid sorting option was not specified')
 
         return data
 
@@ -178,6 +252,11 @@ class RawPopGenData(PopGenProcessor):
             raise Exception('Datatype must be in RawPopGenData class config')
 
     def conversion_datatype(self) -> str:
+        if 'pop' in self.config:
+            if 'image' in self.config['datatype']:
+                return f'popgen_pop_image{self.config["pop"]}'
+            elif 'positions' in self.config['datatype']:
+                return f'popgen_pop_positions{self.config["pop"]}'
         return self.config['datatype']
 
     def _convert(self, data: np.ndarray) -> np.ndarray:
@@ -197,8 +276,8 @@ if __name__ == '__main__':
     from simulate.popgen_simulators import retrieve_simulator
     """For Testing"""
     def simulate_and_process(settings,
-                 parallel: bool = True,
-                 max_sub_processes: int = 10):
+                             parallel: bool = True,
+                             max_sub_processes: int = 10):
         """Simulates the data specified by settings
 
         Parameters
@@ -210,6 +289,7 @@ if __name__ == '__main__':
 
         for label, sim_config_list in settings['simulations'].items():
             for sim_config in sim_config_list:
+                print(sim_config)
                 simulator = retrieve_simulator(sim_config['software'])(sim_config,
                                                                        parallel=parallel,
                                                                        max_sub_processes=max_sub_processes)
@@ -222,7 +302,6 @@ if __name__ == '__main__':
                                                                                         parallel=parallel,
                                                                                         max_sub_processes=max_sub_processes)
                     processor.run_conversions()
-
 
     sim_settings1 = {
         'neutral': [
@@ -278,6 +357,11 @@ if __name__ == '__main__':
     }
 
     conversion_settings = [{'conversion_type': 'imagene',
+                            'sorting': 'None',
+                            'min_minor_allele_freq': 0.01,
+                            'resize_dimensions': 128
+                            },
+                           {'conversion_type': 'imagene',
                             'sorting': 'Rows',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
@@ -291,11 +375,6 @@ if __name__ == '__main__':
                             'sorting': 'RowsCols',
                             'min_minor_allele_freq': 0.01,
                             'resize_dimensions': 128
-                            },
-                           {'conversion_type': 'imagene',
-                            'sorting': 'None',
-                            'min_minor_allele_freq': 0.01,
-                            'resize_dimensions': 128
                             }
                            ]
 
@@ -304,13 +383,104 @@ if __name__ == '__main__':
         'conversions': conversion_settings
     }
 
-    #simulate_and_process(settings, parallel=True, max_sub_processes=20)
+    # simulate_and_process(settings, parallel=True, max_sub_processes=20)
 
-    #simulate_and_process(settings, parallel=False, max_sub_processes=22)
+    # simulate_and_process(settings, parallel=False, max_sub_processes=22)
 
     settings = {
         'simulations': sim_settings2,
         'conversions': conversion_settings
     }
 
-    simulate_and_process(settings, parallel=True, max_sub_processes=16)
+    sweeps = [
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 1,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.0025',
+         'SWEEPPOP': 1,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 2,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.0025',
+         'SWEEPPOP': 2,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.01',
+         'SWEEPPOP': 3,
+         },
+
+        {'software': 'slim',
+         'template': 'schaffner_model_sweep.slim',
+         'N': 10,
+         'NINDIV': '64',
+         'SELCOEFF': '0.0025',
+         'SWEEPPOP': 2,
+         },
+    ]
+
+    for sweep in sweeps:
+        sim_settings = {
+            'neutral': [
+                {'software': 'slim',
+                 'template': 'schaffner_model_neutral.slim',
+                 'N': 10,
+                 'NINDIV': '64'
+                 }
+
+            ],
+            'sweep': [
+                sweep
+            ]
+        }
+
+        conversion_settings = [
+            {'conversion_type': 'imagene',
+                                'sorting': 'Rows',
+                                'min_minor_allele_freq': 0.01,
+                                'resize_dimensions': 128,
+                                'pop': 1
+             },
+            {'conversion_type': 'imagene',
+             'sorting': 'Rows',
+             'min_minor_allele_freq': 0.01,
+             'resize_dimensions': 128,
+             'pop': 2
+             },
+            {'conversion_type': 'imagene',
+             'sorting': 'Rows',
+             'min_minor_allele_freq': 0.01,
+             'resize_dimensions': 128,
+             'pop': 3
+             },
+        ]
+
+        settings = {
+            'simulations': sim_settings,
+            'conversions': conversion_settings
+        }
+
+        simulate_and_process(settings, parallel=True, max_sub_processes=3)

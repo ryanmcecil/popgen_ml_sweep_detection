@@ -1,17 +1,22 @@
-from models.retrieve_model import retrieve_model
-from models.popgen_summary_statistics import all_statistcs, all_image_and_position_statistics
-from reproduce.imagene.msms.imagene_results import imagene_sim_config, imagene_conversion_config, get_training_settings
-from reproduce.imagene.msms.tiny_imagene_results import tiny_imagene_model_config
-from typing import Dict
 import csv
-from sklearn.metrics import precision_score
-from scipy.stats import spearmanr
-import numpy as np
 import os
-from util.util import getGPU
+from typing import Dict
+
+import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 import seaborn as sns
+from matplotlib import pyplot as plt
+from scipy.stats import spearmanr
+from sklearn.metrics import precision_score
+
+from models.popgen_summary_statistics import (
+    all_image_and_position_statistics, all_statistcs)
+from models.retrieve_model import retrieve_model
+from reproduce.imagene_results.msms.imagene_results import (
+    get_training_settings, imagene_conversion_config, imagene_sim_config)
+from reproduce.imagene_results.msms.tiny_imagene_results import \
+    tiny_imagene_model_config
+from util.util import getGPU
 
 
 def stat_model_config(name: str) -> Dict:
@@ -52,7 +57,8 @@ def compare_model_to_msms_imagene_statistics(model_config, output_file):
     with open(output_file, 'w') as csv_file:
         rows = []
         writer = csv.writer(csv_file)
-        rows.append(['statistic', 'stat_acc', 'stat_tp', 'stat_tn', 'ml_model', 'ml_acc', 'ml_tp', 'ml_tn', 'Corr'])
+        rows.append(['statistic', 'stat_acc', 'stat_tp', 'stat_tn',
+                    'ml_model', 'ml_acc', 'ml_tp', 'ml_tn', 'Corr'])
         # First train and test model
         model = retrieve_model(model_config)(model_config)
         model_predictions, model_classifications, model_labels, model_acc = model.test(prediction_values=True,
@@ -94,10 +100,11 @@ def compare_model_to_msms_imagene_statistics(model_config, output_file):
             ###################################
             new_row.append(model_config['model']['name'])
             new_row.append(model_acc)
-            new_row.append(precision_score(model_labels, model_classifications))
+            new_row.append(precision_score(
+                model_labels, model_classifications))
             new_row.append(np.sum(model_labels[model_labels == 0] == model_classifications[model_labels == 0]) / np.sum(
                 model_labels == 0))
-            #####################################3
+            # 3
             corr, p_value = spearmanr(a=stat_predictions, b=model_predictions)
             ########################################
             new_row.append(corr)
@@ -105,7 +112,8 @@ def compare_model_to_msms_imagene_statistics(model_config, output_file):
         writer.writerows(rows)
 
 
-def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename: str):
+def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename: str,
+                                              imagene_sim_config_func, conversions_func):
     """Plots model and statistic accuracies, and a correlation matrix between the prediction outputs
 
     Parameters
@@ -119,24 +127,23 @@ def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename:
     model = retrieve_model(model_config)(model_config)
     data_predictions, data_acc = {}, {}
     data_predictions['tiny_imagene'], data_acc['tiny_imagene'] = model.test(prediction_values=True,
-                                            accuracy_value=True,
-                                            test_in_batches=True)
+                                                                            accuracy_value=True,
+                                                                            test_in_batches=True)
 
     # Get statistic data
     for stat in all_statistcs():
-        conversions = imagene_conversion_config()
         if stat not in all_image_and_position_statistics():
             print(f'Testing {stat}')
             stat_config = {
-                'train': {'simulations': imagene_sim_config('0.01'),
-                          'conversions': conversions,
+                'train': {'simulations': imagene_sim_config_func('0.01'),
+                          'conversions': conversions_func(),
                           'training': stat_training_settings()},
                 'model': stat_model_config(name=stat)
             }
             stat_model = retrieve_model(stat_config)(stat_config)
             data_predictions[stat], data_acc[stat] = stat_model.test(prediction_values=True,
-                                            accuracy_value=True,
-                                            test_in_batches=True)
+                                                                     accuracy_value=True,
+                                                                     test_in_batches=True)
 
     print('Plotting')
     # Save csv file of acuracies
@@ -151,7 +158,8 @@ def stat_comparison_plot_accs_and_corr_matrix(model_config: Dict, base_filename:
     sns.heatmap(df.corr(method='spearman'), annot=True, fmt='.4f',
                 cmap=plt.get_cmap('coolwarm'), cbar=False, ax=ax)
     ax.set_yticklabels(ax.get_yticklabels(), rotation="horizontal")
-    plt.savefig(f'{base_filename}_stat_corr.png', bbox_inches='tight', pad_inches=0.0)
+    plt.savefig(f'{base_filename}_stat_corr.png',
+                bbox_inches='tight', pad_inches=0.0)
 
 
 if __name__ == '__main__':
@@ -166,4 +174,5 @@ if __name__ == '__main__':
                   'training': get_training_settings()},
         'model': tiny_imagene_model_config()
     }
-    stat_comparison_plot_accs_and_corr_matrix(model_config,'reproduce/imagene/msms/results/tiny_imagene')
+    stat_comparison_plot_accs_and_corr_matrix(
+        model_config, 'reproduce/imagene/msms/results/tiny_imagene', imagene_sim_config, imagene_conversion_config)

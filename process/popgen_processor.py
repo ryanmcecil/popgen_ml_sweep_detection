@@ -1,10 +1,12 @@
+import multiprocessing
+import os
 from abc import ABC, abstractmethod
 from typing import Dict
-from util.popgen_data_class import PopGenDataClass
-from simulate.popgen_simulator import PopGenSimulator
-import os
+
 import numpy as np
-import multiprocessing
+
+from simulate.popgen_simulator import PopGenSimulator
+from util.popgen_data_class import PopGenDataClass
 
 
 class PopGenProcessor(PopGenDataClass, ABC):
@@ -13,7 +15,8 @@ class PopGenProcessor(PopGenDataClass, ABC):
     def __init__(self,
                  config: Dict,
                  simulator: PopGenSimulator,
-                 root_dir: str = os.path.join(os.getcwd(), 'process', 'conversions'),
+                 root_dir: str = os.path.join(
+                     os.getcwd(), 'process', 'conversions'),
                  parallel=True,
                  max_sub_processes: int = 10):
         """Initializes processor class with configuration
@@ -69,19 +72,21 @@ class PopGenProcessor(PopGenDataClass, ABC):
         datatype = self.conversion_datatype()
         data = self.simulator.load_data(id_num=id_num, datatype=datatype)
         data = self._convert(data)
-        if datatype == 'popgen_image':
-            if id_num == 1:
-                self.plot_example_image(data)
+        if 'image' in datatype:
+            if id_num < 5:
+                self.plot_example_image(data, name=f'example{id_num}')
         self.save_data(data, id_num, datatype)
 
     def run_conversions(self):
         """If data have not already been converted, run processing"""
+
         last_saved_id = self._last_saved_id(self.conversion_datatype())
 
         if last_saved_id < self.simulator.config['N']:
             if self.parallel:
                 pool = multiprocessing.Pool(self.max_sub_processes)
-                pool.map(self._convert_and_save, range(last_saved_id + 1, self.simulator.config['N'] + 1))
+                pool.map(self._convert_and_save, range(
+                    last_saved_id + 1, self.simulator.config['N'] + 1))
             else:
                 for i in range(last_saved_id + 1, self.simulator.config['N'] + 1):
                     self._convert_and_save(i)
