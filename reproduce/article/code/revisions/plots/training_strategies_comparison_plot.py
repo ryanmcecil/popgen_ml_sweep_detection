@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+# Bar plots to compare training strategies
+############################################################################
+
 save_folder = os.path.join(
     os.getcwd(), 'reproduce/article/results/revisions')
 
-# Early stopping performance bar plot and values
-############################################################################
 data = pd.read_csv(os.path.join(
     save_folder,  'training_strategies_comparison.csv'))
 

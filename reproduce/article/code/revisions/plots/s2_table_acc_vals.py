@@ -16,11 +16,8 @@ from reproduce.article.code.visualize import visualize_models
 from reproduce.article.code.widths import retrieve_max_width_from_settings
 from util.util import getGPU
 
-# This file is for creating new results based on first round of revision process for PLoS Comp Bio
-##################################################################################################
-
-# Producing results to analyze if early stopping or 'simulation on the fly' changes performances
-##################################################################################################
+# Re-generates accuracy values for S2 table
+#############################################
 
 # Filepaths
 save_folder = os.path.join(

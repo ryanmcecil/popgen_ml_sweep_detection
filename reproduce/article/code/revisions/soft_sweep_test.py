@@ -20,7 +20,6 @@ stat_configs = {
 
 }
 
-print('Hard Sweep vs soft sweep')
 # Test Garud's H1 and Garud's H1/H2 on their ability to distinguish hard sweeps from soft sweeps
 for stat_name, stat_config in stat_configs.items():
     stat_config = {
@@ -51,7 +50,6 @@ for stat_name, stat_config in stat_configs.items():
     accuracy = stat_model.test(accuracy_value=True)
     print(accuracy)
 
-print('Hard vs neutral')
 # Test Garud's H1 and Garud's H1/H2 on their ability to distinguish hard sweeps from neutral
 for stat_name, stat_config in stat_configs.items():
     stat_config = {
@@ -83,7 +81,6 @@ for stat_name, stat_config in stat_configs.items():
     print(min(predictions))
     print(accuracy)
 
-print('Soft vs neutral')
 # Test Garud's H1 and Garud's H1/H2 on their ability to distinguish hard sweeps from neutral
 for stat_name, stat_config in stat_configs.items():
     stat_config = {

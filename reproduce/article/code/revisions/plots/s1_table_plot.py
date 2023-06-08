@@ -12,6 +12,9 @@ from util.util import getGPU
 
 getGPU()
 
+# Bar plot to visualize main differences in S1 table
+#########################################################
+
 
 def get_interval(accuracy, simulation_type):
     if 'Three Pop' in simulation_type:
@@ -23,8 +26,6 @@ def get_interval(accuracy, simulation_type):
 save_folder = os.path.join(
     os.getcwd(), 'reproduce/article/results/revisions')
 
-# Bar plot to visualize main differences in S1 table
-#########################################################
 
 # Get simulation, conversion, and training strategies
 settings = {'simulations': {

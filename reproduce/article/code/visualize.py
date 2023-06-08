@@ -11,7 +11,6 @@ from sklearn.metrics import roc_auc_score
 
 from models.retrieve_model import retrieve_model
 from reproduce.article.code.configs import ml_stat_comparison_model_configs
-from reproduce.article.code.run import run_process
 from reproduce.article.code.widths import retrieve_image_width_from_settings
 from util.util import getGPU
 

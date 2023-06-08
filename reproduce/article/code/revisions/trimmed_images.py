@@ -15,7 +15,7 @@ from util.util import getGPU
 # This file is for creating new results based on first round of revision process for PLoS Comp Bio
 ##################################################################################################
 
-# Producing results to analyze if early stopping or 'simulation on the fly' changes performances
+# Producing results to analyze how trimming images changes the model performances
 ##################################################################################################
 
 # Filepaths
@@ -180,52 +180,52 @@ with open(save_file, 'w') as csv_file:
     writer.writerow(['Simulation Type', 'SELCOEFF', 'Image Width',
                     'Model', 'Accuracy'])
 
-# # Train and test models on different number of haplotypes
-# for sel_coeff in sel_coeffs:
-#     for sim_name, sim_config in simulation_configs.items():
-#         for model_name, model_config in models.items():
-#             sim_conversion_training_config = deepcopy(
-#                 sim_config)  # get simulation config
-#             sim_conversion_training_config['training'] = deepcopy(
-#                 training_config)  # get training config
-#             # set selection coefficient
-#             sim_conversion_training_config['simulations']['sweep'][0]['SELCOEFF'] = sel_coeff
-#             # get conversion config based on min width
-#             sim_conversion_training_config['conversions'] = [
-#                 deepcopy(conversion_config)]
-#             if 'pop' in sim_name:
-#                 sim_conversion_training_config['conversions'][0]['pop'] = sim_config['simulations']['sweep'][0]['SWEEPPOP']
-#             min_width = retrieve_max_width_from_settings(
-#                 sim_conversion_training_config, use_min=True)
-#             print(
-#                 f'Training Models with Pared Down Data: Min Width is {min_width}')
-#             sim_conversion_training_config['conversions'][0]['resize_dimensions'] = min_width
-#             model_config = deepcopy(model_config)
-#             model_config['image_width'] = min_width
-#             config = {
-#                 'train': sim_conversion_training_config,
-#                 'model': model_config
-#             }
-#             print('Training Model with Config')
-#             print(config)
-#             print('------------------------------------')
-#             evaluate(config, save_file, [sim_name,
-#                                          sel_coeff, min_width, model_name])
-#         # Also test Garud's H and report result
-#         conv_config = deepcopy(conversion_config)
-#         conv_config['resize_dimensions'] = min_width
-#         if 'pop' in sim_name:
-#             conv_config['pop'] = sim_config['simulations']['sweep'][0]['SWEEPPOP']
-#         stat_config = {
-#             'train': {'simulations': deepcopy(sim_conversion_training_config['simulations']),
-#                       'conversions': [conv_config],
-#                       'training': stat_comparison_training_settings()},
-#             'model': {'type': 'statistic',
-#                       'name': 'garud_h1'}
-#         }
-#         print("Testing Garud's H on Data")
-#         evaluate(stat_config, save_file, [sim_name,
-#                                           sel_coeff, min_width, "Garud's H"])
+# Train and test models on different number of haplotypes
+for sel_coeff in sel_coeffs:
+    for sim_name, sim_config in simulation_configs.items():
+        for model_name, model_config in models.items():
+            sim_conversion_training_config = deepcopy(
+                sim_config)  # get simulation config
+            sim_conversion_training_config['training'] = deepcopy(
+                training_config)  # get training config
+            # set selection coefficient
+            sim_conversion_training_config['simulations']['sweep'][0]['SELCOEFF'] = sel_coeff
+            # get conversion config based on min width
+            sim_conversion_training_config['conversions'] = [
+                deepcopy(conversion_config)]
+            if 'pop' in sim_name:
+                sim_conversion_training_config['conversions'][0]['pop'] = sim_config['simulations']['sweep'][0]['SWEEPPOP']
+            min_width = retrieve_max_width_from_settings(
+                sim_conversion_training_config, use_min=True)
+            print(
+                f'Training Models with Pared Down Data: Min Width is {min_width}')
+            sim_conversion_training_config['conversions'][0]['resize_dimensions'] = min_width
+            model_config = deepcopy(model_config)
+            model_config['image_width'] = min_width
+            config = {
+                'train': sim_conversion_training_config,
+                'model': model_config
+            }
+            print('Training Model with Config')
+            print(config)
+            print('------------------------------------')
+            evaluate(config, save_file, [sim_name,
+                                         sel_coeff, min_width, model_name])
+        # Also test Garud's H and report result
+        conv_config = deepcopy(conversion_config)
+        conv_config['resize_dimensions'] = min_width
+        if 'pop' in sim_name:
+            conv_config['pop'] = sim_config['simulations']['sweep'][0]['SWEEPPOP']
+        stat_config = {
+            'train': {'simulations': deepcopy(sim_conversion_training_config['simulations']),
+                      'conversions': [conv_config],
+                      'training': stat_comparison_training_settings()},
+            'model': {'type': 'statistic',
+                      'name': 'garud_h1'}
+        }
+        print("Testing Garud's H on Data")
+        evaluate(stat_config, save_file, [sim_name,
+                                          sel_coeff, min_width, "Garud's H"])
 
 
 # Visualize the shap explanations for the different models

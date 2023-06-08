@@ -1,9 +1,6 @@
 ## Site Frequency Spectrum
 
-MSMS and SLiM simulations appeared to be different due to the difference in accuracies (although Imagene appeared to 
-be behaving the same way in both cases), so we decided to explore how they might be different.
-
-This folder was created to gain a better understanding of the different types of simulations and if they
+This folder was created to gain a better understanding of the different types of simulations (MSMS and SLiM) and if they
 
 1. Accurately represent the same populations (msms vs slim)
 2. If they accurately represent human populations

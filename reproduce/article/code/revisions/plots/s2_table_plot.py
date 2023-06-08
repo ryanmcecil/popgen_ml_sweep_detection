@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+# Creates bar plots to visualize model performances from S2 table
+#############################################
+
 save_folder = os.path.join(
     os.getcwd(), 'reproduce/article/results/revisions')
-
-# Function to compute confidence interval
 
 
 def get_interval(accuracy, simulation_type):

@@ -5,8 +5,14 @@
 # revealing the lurking role of preprocessing, and the surprising
 # effectiveness of summary statistics
 
+# make results directory
+mkdir -p reproduce/article/results
+
 # Run run.py to reproduce results and plots from original analyses
 python3 reproduce/article/code/run.py
+
+# make revisions directory in results
+mkdir -p reproduce/article/results/revisions
 
 # Run revision files to reproduce new results for article revisions
 for f in reproduce/article/code/revisions/*.py; do python "$f"; done #csv results

@@ -1,7 +1,8 @@
 import os
 import random
-from allel import read_vcf
+
 import numpy as np
+from allel import read_vcf
 from matplotlib import pyplot as plt
 
 if __name__ == '__main__':
@@ -12,8 +13,7 @@ if __name__ == '__main__':
             samples = pop_file.read().splitlines()
         samples = random.sample(samples, 64)
         print(samples)
-        out = read_vcf(os.path.join(os.getcwd(), 'reproduce/sfs',
-                                    '../../data/genetic/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf'),
+        out = read_vcf(os.path.join(os.getcwd(), 'data/genetic/ALL.chr20.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf'),
                        fields=['calldata/GT'],
                        samples=samples)
         output = out['calldata/GT']

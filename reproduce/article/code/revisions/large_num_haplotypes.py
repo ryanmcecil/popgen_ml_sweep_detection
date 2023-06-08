@@ -18,15 +18,12 @@ from util.util import getGPU
 # This file is for creating new results based on first round of revision process for PLoS Comp Bio
 ##################################################################################################
 
-# Producing results to analyze if early stopping or 'simulation on the fly' changes performances
+# Producing results to analayze effect of increasing number of haplotypes
 ##################################################################################################
 
 # Filepaths
 save_folder = os.path.join(
     os.getcwd(), 'reproduce/article/results/revisions')
-if not os.path.exists(save_folder):
-    os.makedirs(save_folder)
-save_file = os.path.join(save_folder, 'early_stopping_analysis.csv')
 
 models = {
     'Imagene': {
@@ -81,29 +78,6 @@ conversion_config = {'conversion_type': 'imagene',
                      'resize_dimensions': 128
                      }
 
-training_configs = {'Best Of': {'epochs': 2,
-                                'batch_size': 64,
-                                'train_proportion': 0.8,
-                                'validate_proportion': 0.1,
-                                'test_proportion': 0.1,
-                                'best_of': 10
-                                },
-                    'Early Stopping': {'epochs': 100,
-                                       'batch_size': 64,
-                                       'train_proportion': 0.8,
-                                       'validate_proportion': 0.1,
-                                       'test_proportion': 0.1,
-                                       'early_stopping': True,
-                                       'best_of': 1
-                                       },
-                    'Simulation on the Fly': {'epochs': 1,
-                                              'batch_size': 64,
-                                              'train_proportion': 0.8,
-                                              'validate_proportion': 0.1,
-                                              'test_proportion': 0.1,
-                                              'best_of': 1
-                                              }}
-
 
 # Function to train models in different processes
 def _evaluate(config, save_file, settings):
@@ -123,9 +97,6 @@ def evaluate(config, save_file, settings):
     p.join()
     p.terminate()
 
-
-# Performance of models on MSMS data with 1000 haplotypes
-#################################################################################################
 
 # Filepaths
 save_file = os.path.join(save_folder, 'large_num_haplotypes_analysis.csv')

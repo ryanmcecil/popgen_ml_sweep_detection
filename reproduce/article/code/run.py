@@ -36,6 +36,9 @@ if __name__ == '__main__':
                 settings)
 
         # Create results directory
+        results_dir = os.path.join(os.getcwd(), 'reproduce/article/results')
+        if not os.path.isdir(results_dir):
+            os.mkdir(results_dir)
         save_dir = os.path.join(os.getcwd(), 'reproduce/article/results', name)
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)

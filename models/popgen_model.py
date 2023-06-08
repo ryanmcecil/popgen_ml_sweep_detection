@@ -30,7 +30,7 @@ class PopGenModel(ABC, PopGenDataClass):
         train_model: (bool) - If True, model will be trained.
         """
         super().__init__(config=config, root_dir=root_dir)
-        print(self.data_dir)
+        # print(self.data_dir)
         self.config = config.copy()
         self.train_model = train_model
         self.model = self._load_model()

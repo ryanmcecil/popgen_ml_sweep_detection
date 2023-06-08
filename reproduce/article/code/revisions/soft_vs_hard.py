@@ -14,7 +14,7 @@ from util.util import getGPU
 # This file is for creating new results based on first round of revision process for PLoS Comp Bio
 ##################################################################################################
 
-# Producing results to analyze if early stopping or 'simulation on the fly' changes performances
+# Visualizations and performances for models when predicting hard vs soft sweeps
 ##################################################################################################
 
 # Filepaths
