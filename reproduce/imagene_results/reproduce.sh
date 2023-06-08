@@ -1,6 +1,5 @@
 #!/bin/bash
 
 # Bash code to reproduce results for reproducing imagene results with both msms and slim
-python3 reproduce/imagene/sample_complexity.py
-bash reproduce/imagene/msms/reproduce.sh
-bash reproduce/imagene/slim/reproduce.sh
+python3 reproduce/imagene_results/msms/imagene_results.py
+python3 reproduce/imagene_results/slim/imagene_results.py

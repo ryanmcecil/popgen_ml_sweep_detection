@@ -23,7 +23,6 @@ def getGPU():
         except RuntimeError as e:
             # Memory growth must be set before GPUs have been initialized
             print(e)
-    print(tf.config.list_physical_devices('GPU'))
 
 
 def save_grey_image(image, filename: str, colorbar: bool = True, xticks=None, yticks=None, cmap='Greys_r', symmetric_range: bool = False, logscale: bool = False,

@@ -38,8 +38,11 @@ if __name__ == '__main__':
     getGPU()
     print('---------------------------------')
     print('Testing Imagene Sortings')
+    if not os.path.exists(os.path.join(os.getcwd(), 'reproduce/imagene_results/slim/results')):
+        os.mkdir(os.path.join(
+            os.getcwd(), 'reproduce/imagene_results/slim/results'))
     train_test_sortings(imagene_sim_config('0.01'),
                         imagene_conversion_config(),
                         get_training_settings(),
                         imagene_model_config(),
-                        os.path.join(os.getcwd(), 'reproduce/imagene/slim/results/imagene_msms_cnm_results.png'))
+                        os.path.join(os.getcwd(), 'reproduce/imagene_results/slim/results/imagene_msms_cnm_results.png'))

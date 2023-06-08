@@ -1,10 +1,12 @@
-from typing import Dict, List
-from util.util import getGPU
-from models.retrieve_model import retrieve_model
-from matplotlib import pyplot as plt
-import os
-import tensorflow as tf
 import copy
+import os
+from typing import Dict, List
+
+import tensorflow as tf
+from matplotlib import pyplot as plt
+
+from models.retrieve_model import retrieve_model
+from util.util import getGPU
 
 
 def imagene_sim_config(selection_coeff: str) -> Dict:
@@ -83,8 +85,11 @@ def imagene_model_config() -> Dict:
         'max_pooling': True,
         'relu': True,
         'filters': 32,
+        'image_height': 128,
+        'image_width': 128,
         'depth': 3,
-        'kernel_size': 3,
+        'kernel_height': 3,
+        'kernel_width': 3,
         'num_dense_layers': 1
     }
     return model_config
@@ -143,8 +148,11 @@ if __name__ == '__main__':
     getGPU()
     print('---------------------------------')
     print('Testing Imagene Sortings')
+    if not os.path.exists(os.path.join(os.getcwd(), 'reproduce/imagene_results/msms/results')):
+        os.mkdir(os.path.join(
+            os.getcwd(), 'reproduce/imagene_results/msms/results'))
     train_test_sortings(imagene_sim_config('0.01'),
                         imagene_conversion_config(),
                         get_training_settings(),
                         imagene_model_config(),
-                        os.path.join(os.getcwd(), 'reproduce/imagene/msms/results/imagene_msms_cnm_results.png'))
+                        os.path.join(os.getcwd(), 'reproduce/imagene_results/msms/results/imagene_msms_cnn_results.png'))
