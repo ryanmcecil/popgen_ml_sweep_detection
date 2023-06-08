@@ -2,6 +2,7 @@
 Functions define settings for models tested in all experiments
 """
 from typing import Dict, List
+
 from models.popgen_summary_statistics import all_image_and_position_statistics
 
 
@@ -16,53 +17,53 @@ def ml_sim_conversion_training_configs() -> Dict:
     settings.
     """
     return {
-        #####################################
-        # 'imagene_sim_row_sorted_s=0.01': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'msms',
-        #              'NREF': '10000',
-        #              'N': 50000,
-        #              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-        #              'LEN': '80000',
-        #              'THETA': '48',
-        #              'RHO': '32',
-        #              'NCHROMS': '128',
-        #              'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-        #              'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-        #              'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-        #              'SELCOEFF': '0',
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'msms',
-        #              'N': 50000,
-        #              'NREF': '10000',
-        #              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-        #              'LEN': '80000',
-        #              'THETA': '48',
-        #              'RHO': '32',
-        #              'NCHROMS': '128',
-        #              'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-        #              'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-        #              'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-        #              'SELCOEFF': '0.01',
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }},
-        ###############################################
+        ####################################
+        'imagene_sim_row_sorted_s=0.01': {
+            'simulations': {
+                'neutral': [
+                    {'software': 'msms',
+                     'NREF': '10000',
+                     'N': 50000,
+                     'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+                     'LEN': '80000',
+                     'THETA': '48',
+                     'RHO': '32',
+                     'NCHROMS': '128',
+                     'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+                     'FREQ': '`bc <<< \'scale=6; 1/100\'`',
+                     'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+                     'SELCOEFF': '0',
+                     }
+                ],
+                'sweep': [
+                    {'software': 'msms',
+                     'N': 50000,
+                     'NREF': '10000',
+                     'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+                     'LEN': '80000',
+                     'THETA': '48',
+                     'RHO': '32',
+                     'NCHROMS': '128',
+                     'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+                     'FREQ': '`bc <<< \'scale=6; 1/100\'`',
+                     'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+                     'SELCOEFF': '0.01',
+                     }
+                ]
+            },
+            'conversions': [{'conversion_type': 'imagene',
+                             'sorting': 'Rows',
+                             'min_minor_allele_freq': 0.01,
+                             'resize_dimensions': 128
+                             }],
+            'training': {'epochs': 2,
+                         'batch_size': 64,
+                         'train_proportion': 0.8,
+                         'validate_proportion': 0.1,
+                         'test_proportion': 0.1,
+                         'best_of': 10
+                         }},
+        ##############################################
         'imagene_sim_row_sorted_zero_padding_s=0.01': {
             'simulations': {
                 'neutral': [
@@ -109,51 +110,51 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }},
         ####################################
-        # 'imagene_sim_row_sorted_s=0.005': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'msms',
-        #              'NREF': '10000',
-        #              'N': 50000,
-        #              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-        #              'LEN': '80000',
-        #              'THETA': '48',
-        #              'RHO': '32',
-        #              'NCHROMS': '128',
-        #              'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-        #              'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-        #              'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-        #              'SELCOEFF': '0',
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'msms',
-        #              'N': 50000,
-        #              'NREF': '10000',
-        #              'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
-        #              'LEN': '80000',
-        #              'THETA': '48',
-        #              'RHO': '32',
-        #              'NCHROMS': '128',
-        #              'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
-        #              'FREQ': '`bc <<< \'scale=6; 1/100\'`',
-        #              'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
-        #              'SELCOEFF': '0.005',
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }},
+        'imagene_sim_row_sorted_s=0.005': {
+            'simulations': {
+                'neutral': [
+                    {'software': 'msms',
+                     'NREF': '10000',
+                     'N': 50000,
+                     'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+                     'LEN': '80000',
+                     'THETA': '48',
+                     'RHO': '32',
+                     'NCHROMS': '128',
+                     'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+                     'FREQ': '`bc <<< \'scale=6; 1/100\'`',
+                     'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+                     'SELCOEFF': '0',
+                     }
+                ],
+                'sweep': [
+                    {'software': 'msms',
+                     'N': 50000,
+                     'NREF': '10000',
+                     'DEMO': '-eN 0.0875 1 -eN 0.075 0.2 -eN 0 2',
+                     'LEN': '80000',
+                     'THETA': '48',
+                     'RHO': '32',
+                     'NCHROMS': '128',
+                     'SELPOS': '`bc <<< \'scale=2; 1/2\'`',
+                     'FREQ': '`bc <<< \'scale=6; 1/100\'`',
+                     'SELTIME': '`bc <<< \'scale=4; 600/40000\'`',
+                     'SELCOEFF': '0.005',
+                     }
+                ]
+            },
+            'conversions': [{'conversion_type': 'imagene',
+                             'sorting': 'Rows',
+                             'min_minor_allele_freq': 0.01,
+                             'resize_dimensions': 128
+                             }],
+            'training': {'epochs': 2,
+                         'batch_size': 64,
+                         'train_proportion': 0.8,
+                         'validate_proportion': 0.1,
+                         'test_proportion': 0.1,
+                         'best_of': 10
+                         }},
         #################################################
         'imagene_sim_row_sorted_zero_padding_s=0.005': {
             'simulations': {
@@ -200,110 +201,7 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'test_proportion': 0.1,
                          'best_of': 10
                          }},
-        << << << < HEAD
         ###############################################
-        # 'schaffner_sweep_pop1_row_sorted_s=0.01': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.01',
-        #              'SWEEPPOP': 1,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 1
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }},
-        # ###############################################
-        # 'schaffner_sweep_pop2_row_sorted_s=0.01': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.01',
-        #              'SWEEPPOP': 2,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 2
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }
-        # },
-        ###############################################
-        # 'schaffner_sweep_pop3_row_sorted_s=0.01': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.01',
-        #              'SWEEPPOP': 3,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 3
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }
-        # },
-        == == == =
-        ################################################
         'schaffner_sweep_pop1_row_sorted_s=0.01': {
             'simulations': {
                 'neutral': [
@@ -336,7 +234,7 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'test_proportion': 0.1,
                          'best_of': 10
                          }},
-        ################################################
+        ###############################################
         'schaffner_sweep_pop2_row_sorted_s=0.01': {
             'simulations': {
                 'neutral': [
@@ -370,7 +268,7 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }
         },
-        ################################################
+        ##############################################
         'schaffner_sweep_pop3_row_sorted_s=0.01': {
             'simulations': {
                 'neutral': [
@@ -404,7 +302,6 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }
         },
-        >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         #################################################
         'schaffner_sweep_pop1_row_sorted_zero_padding_s=0.01': {
             'simulations': {
@@ -505,108 +402,6 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }},
         ################################################
-        << << << < HEAD
-        # 'schaffner_sweep_pop1_row_sorted_s=0.005': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.005',
-        #              'SWEEPPOP': 1,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 1
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }},
-        # ################################################
-        # 'schaffner_sweep_pop2_row_sorted_s=0.005': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.005',
-        #              'SWEEPPOP': 2,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 2
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }
-        # },
-        ################################################
-        # 'schaffner_sweep_pop3_row_sorted_s=0.005': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 10000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.005',
-        #              'SWEEPPOP': 3,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 3
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }
-        # },
-        == == == =
         'schaffner_sweep_pop1_row_sorted_s=0.005': {
             'simulations': {
                 'neutral': [
@@ -639,7 +434,7 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'test_proportion': 0.1,
                          'best_of': 10
                          }},
-        #################################################
+        # ################################################
         'schaffner_sweep_pop2_row_sorted_s=0.005': {
             'simulations': {
                 'neutral': [
@@ -673,7 +468,7 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }
         },
-        #################################################
+        ################################################
         'schaffner_sweep_pop3_row_sorted_s=0.005': {
             'simulations': {
                 'neutral': [
@@ -707,7 +502,6 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }
         },
-        >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
         #################################################
         'schaffner_sweep_pop1_row_sorted_zero_padding_s=0.005': {
             'simulations': {
@@ -807,108 +601,6 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'test_proportion': 0.1,
                          'best_of': 10
                          }},
-        << << << < HEAD
-        # 'schaffner_sweep_pop1_row_sorted_s=0.01_N=100000': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 50000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 50000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.01',
-        #              'SWEEPPOP': 1,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 1
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }},
-        # # ################################################
-        # 'schaffner_sweep_pop2_row_sorted_s=0.01_N=100000': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 50000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 50000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.01',
-        #              'SWEEPPOP': 2,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 2
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }
-        # },
-        # ###############################################
-        # 'schaffner_sweep_pop3_row_sorted_s=0.01_N=100000': {
-        #     'simulations': {
-        #         'neutral': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_neutral.slim',
-        #              'N': 50000,
-        #              'NINDIV': '64'
-        #              }
-        #         ],
-        #         'sweep': [
-        #             {'software': 'slim',
-        #              'template': 'schaffner_model_sweep.slim',
-        #              'N': 50000,
-        #              'NINDIV': '64',
-        #              'SELCOEFF': '0.01',
-        #              'SWEEPPOP': 3,
-        #              }
-        #         ]
-        #     },
-        #     'conversions': [{'conversion_type': 'imagene',
-        #                      'sorting': 'Rows',
-        #                      'min_minor_allele_freq': 0.01,
-        #                      'resize_dimensions': 128,
-        #                      'pop': 3
-        #                      }],
-        #     'training': {'epochs': 2,
-        #                  'batch_size': 64,
-        #                  'train_proportion': 0.8,
-        #                  'validate_proportion': 0.1,
-        #                  'test_proportion': 0.1,
-        #                  'best_of': 10
-        #                  }
-        # },
-        == == == =
         'schaffner_sweep_pop1_row_sorted_s=0.01_N=100000': {
             'simulations': {
                 'neutral': [
@@ -1009,7 +701,6 @@ def ml_sim_conversion_training_configs() -> Dict:
                          'best_of': 10
                          }
         },
-        >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
     }
 
 
@@ -1028,7 +719,6 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
 
     """
     return {'Imagene':
-            << << << < HEAD
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1045,24 +735,6 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
             },
 
             '3 Conv Layers (32 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            {
-                'type': 'ml',
-                'name': 'imagene',
-                'image_height': 128,
-                'image_width': width,
-                'relu': True,
-                'max_pooling': True,
-                'convolution': True,
-                'filters': 32,
-                'depth': 3,
-                'kernel_height': 3,
-                'kernel_width': 3,
-                'num_dense_layers': 1
-            },
-
-            '3 Conv Layers (32 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1077,12 +749,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'kernel_width': 3,
                 'num_dense_layers': 0
             },
-
-            << << << < HEAD
             '2 Conv Layers (32 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '2 Conv Layers (32 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1097,12 +764,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'kernel_width': 3,
                 'num_dense_layers': 0
             },
-
-            << << << < HEAD
             '1 Conv Layers (32 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (32 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1117,12 +779,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'kernel_width': 3,
                 'num_dense_layers': 0
             },
-
-            << << << < HEAD
             '1 Conv Layers (16 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (16 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1138,11 +795,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (4 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (4 3x3 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1158,7 +811,6 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (4 3x1 kernels) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
             {
                 'type': 'ml',
@@ -1176,9 +828,6 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
             },
 
             '1 Conv Layers (1 3x3 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 3x3 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1194,11 +843,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (1 2x2 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 2x2 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1214,11 +859,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (1 1x2 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 1x2 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1234,11 +875,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (1 2x1 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 2x1 kernel) + Max Pooling + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1254,11 +891,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (1 2x1 kernel) + Relu -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 2x1 kernel) + Relu -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1274,11 +907,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'num_dense_layers': 0
             },
 
-            << << << < HEAD
             '1 Conv Layers (1 2x1 kernel) + Max Pooling-> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 2x1 kernel) + Max Pooling-> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1293,12 +922,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'kernel_width': 1,
                 'num_dense_layers': 0
             },
-
-            << << << < HEAD
             '1 Conv Layers (1 2x1 kernel) -> Dense (1 unit) + Sigmoid':
-            == == == =
-            '1 Conv Layers (1 2x1 kernel) -> Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1313,12 +937,7 @@ def imagene_arch_analysis_configs(width: int) -> Dict:
                 'kernel_width': 1,
                 'num_dense_layers': 0
             },
-
-            << << << < HEAD
             'Dense (1 unit) + Sigmoid':
-            == == == =
-            'Dense (1 unit) + Sigmoid':
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             {
                 'type': 'ml',
                 'name': 'imagene',
@@ -1351,7 +970,6 @@ def ml_stat_comparison_model_configs(width: int) -> Dict:
     """
     return {
         'Imagene': {
-            << << << < HEAD
             'type': 'ml',
             'name': 'imagene',
             'image_height': 128,
@@ -1367,23 +985,6 @@ def ml_stat_comparison_model_configs(width: int) -> Dict:
         },
 
         'Mini-CNN': {
-            == == == =
-            'type': 'ml',
-            'name': 'imagene',
-            'image_height': 128,
-            'image_width': width,
-            'relu': True,
-            'max_pooling': True,
-            'convolution': True,
-            'filters': 32,
-            'depth': 3,
-            'kernel_height': 3,
-            'kernel_width': 3,
-            'num_dense_layers': 1
-        },
-
-        'R-Imagene': {
-            >>>>>> > 3ab9be5a0e89e17043c9d1df756f03b0d458ce83
             'type': 'ml',
             'name': 'imagene',
             'image_height': 128,
